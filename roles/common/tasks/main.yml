@@ -1,0 +1,7 @@
+ - include: users.yml
+ - include: security.yml
+ - include: python-pip.yml
+
+ # disabled for testing, slow.
+ #- name: upgrade all packages
+ #  yum: name=* state=latest

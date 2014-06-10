@@ -1,0 +1,10 @@
+droplet_name: "{{ lookup('env','DROPLET_NAME') }}"
+do_admin: "{{ lookup('env','USER') }}"
+my_pub_key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+
+# digital ocean credentials 
+api_key: "{{ lookup('env','DIGITALOCEAN_API_KEY') }}"
+client_id: "{{ lookup('env','DIGITALOCEAN_CLIENT_ID') }}"
+      
+ssh_group: sshusers
+sudo_group: sudousers

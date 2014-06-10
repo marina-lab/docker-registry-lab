@@ -1,0 +1,23 @@
+---
+# First, create the droplet from the host and add it to ansible's inventory
+- hosts: localhost
+  connection: local
+  serial: 1
+  gather_facts: no
+  vars_files:
+    - vars.yml
+  tasks:
+    - include: tasks/droplet.yml
+
+    - name: Sleep for 10 seconds to wait for SSH on droplet
+      command: /bin/sleep 10
+
+# Run the docker registry on the droplet
+- hosts: newdroplets
+  user: root      
+  vars_files:
+    - vars.yml
+  roles:
+    - common
+    - docker_host
+    - docker_reg

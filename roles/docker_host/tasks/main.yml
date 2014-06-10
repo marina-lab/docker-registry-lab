@@ -1,0 +1,20 @@
+---
+ - name: install docker via yum
+   yum: name=docker-io
+        state=present
+
+ - name: remove old docker binary
+   # Note that the initial yum install is required to perform cgroups config
+   file: path=/bin/docker
+         state=absent
+
+ - name: use latest docker binary
+   # Note that the initial yum install is required to perform cgroups config
+   get_url: url=https://get.docker.io/builds/Linux/x86_64/docker-latest
+            dest=/bin/docker
+            mode=0755
+
+ - name: enable and start docker
+   service: name=docker
+            enabled=yes
+            state=started

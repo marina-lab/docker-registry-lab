@@ -1,0 +1,4 @@
+#git+https://github.com/ansible/ansible.git
+dopy
+passlib
+docker-py
