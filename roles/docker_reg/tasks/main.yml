@@ -6,8 +6,8 @@
  - name: run docker registry container
    # FIXME: 0.7.0 has bug where STORAGE_PATH is not respected.
    # Workaround is to mount volume on /tmp...
-   docker: image=registry
+   docker: image="registry:0.7.2"
            ports=5000:5000
            env="STORAGE_PATH=/registry,GUNICORN_WORKERS=1,SETTINGS_FLAVOR=local"
-           volumes="/var/docker_volumes/registry:/tmp"
+           volumes="/var/docker_volumes/registry:/registry"
            state=running
