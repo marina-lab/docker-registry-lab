@@ -18,3 +18,7 @@
    service: name=docker
             enabled=yes
             state=started
+
+ - name: install docker client
+   pip: name=docker-py
+        version=0.3.1
