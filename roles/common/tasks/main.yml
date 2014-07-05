@@ -1,3 +1,4 @@
+ - include: fstab.yml
  - include: users.yml
  - include: security.yml
  - include: python-pip.yml
