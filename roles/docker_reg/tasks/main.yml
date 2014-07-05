@@ -5,6 +5,7 @@
 
  - name: run docker registry container
    docker: image="registry:0.7.3"
+           name="docker-reg"
            ports=5000:5000
            env="STORAGE_PATH=/registry,GUNICORN_WORKERS=1,SETTINGS_FLAVOR=local"
            volumes="/var/docker_volumes/registry:/registry"
