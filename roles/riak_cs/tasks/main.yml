@@ -1,0 +1,12 @@
+# Riak CS Object Storage - an S3-compatible object store
+# https://registry.hub.docker.com/u/hectcastro/riak-cs/
+#
+# For testing, we use a cluster of size one.
+# TODO: Use tagged image from private registry
+ - name: run Riak CS container
+   docker: image="hectcastro/riak-cs"
+           ports=5000:5000
+           env="DOCKER_RIAK_CS_CLUSTER_SIZE=1"
+           name="riak-cs01"
+           publish_all_ports=True
+           state=running

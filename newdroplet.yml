@@ -20,4 +20,5 @@
   roles:
     - common
     - docker_host
+    - riak_cs
     - docker_reg
