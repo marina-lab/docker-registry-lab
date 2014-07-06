@@ -3,6 +3,7 @@
 #
 # For testing, we use a cluster of size one.
 # TODO: Use tagged image from private registry
+# TODO: Disable ssh daemon since nsenter works just fine, thanks.
  - name: run Riak CS container
    docker: image="hectcastro/riak-cs"
            ports=5000:5000
@@ -10,3 +11,20 @@
            name="riak-cs01"
            publish_all_ports=True
            state=running
+   register: riak_cs
+
+ - name: Extract Riak CS key
+   shell: >
+     sudo nsenter
+     --target {{ riak_cs.ansible_facts.docker_containers[0].State.Pid }}
+     --mount --uts --ipc --net --pid
+     egrep "admin_key" /etc/riak-cs/app.config | cut -d'"' -f2
+   register: riak_admin_key
+
+ - name: Extract Riak CS secret
+   shell: >
+     sudo nsenter
+     --target {{ riak_cs.ansible_facts.docker_containers[0].State.Pid }}
+     --mount --uts --ipc --net --pid
+     egrep "admin_secret" /etc/riak-cs/app.config | cut -d'"' -f2
+   register: riak_admin_secret
