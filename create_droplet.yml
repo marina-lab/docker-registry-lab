@@ -13,7 +13,3 @@
     - vars.yml
   tasks:
     - include: tasks/droplet.yml
-
-    - name: Sleep for 10 seconds to wait for SSH on droplet
-      command: /bin/sleep 10
-
