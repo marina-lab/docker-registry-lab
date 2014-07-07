@@ -8,7 +8,7 @@
    docker: image="hectcastro/riak-cs"
            ports=5000:5000
            env="DOCKER_RIAK_CS_CLUSTER_SIZE=1"
-           name="riak-cs01"
+           name="riak-cs"
            publish_all_ports=True
            state=running
    register: riak_cs
@@ -21,12 +21,16 @@
            NetworkSettings.IPAddress }}"
 
  - name: Extract Riak CS key
+   # Because this key is generated shortly after the first time the service
+   # is initialized, we need to retry until it is generated.
    shell: >
      sudo nsenter
      --target {{ riak_cs_pid }}
      --mount --uts --ipc --net --pid
-     egrep "admin_key" /etc/riak-cs/app.config | cut -d'"' -f2
+     egrep "admin_key" /etc/riak-cs/app.config | cut -d '"' -f2
    register: riak_cs_key_reg
+   until: riak_cs_key_reg.stdout.find("admin-key") == -1
+   retries: 10
 
  - name: Extract Riak CS secret
    shell: >
