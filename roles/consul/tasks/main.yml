@@ -1,0 +1,19 @@
+# Consul Service Registration
+# Used as a multi-host service registry.
+# HTTP API is available over 8500.
+ - name: create data directory for consul
+   file: path={{ item }}
+         state=directory
+   with_items:
+     - /var/docker_volumes/consul/consul.d
+     - /var/docker_volumes/consul/data
+
+ - name: run Consul container
+   docker: image="progrium/consul"
+           ports=8500:8500
+           publish_all_ports=True
+           name="consul"
+           hostname="consul"
+           command="-server -bootstrap -data-dir /data -config-dir /etc/consul.d"
+           volumes="/var/docker_volumes/consul/consul.d:/etc/consul.d,/var/docker_volumes/consul/data:/data"
+           state=running

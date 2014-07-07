@@ -10,5 +10,7 @@
   roles:
     - common
     - docker_host
+    - consul
+    - docksul
     - riak_cs
     - docker_reg

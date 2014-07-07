@@ -21,4 +21,4 @@
 
  - name: install docker client
    pip: name=docker-py
-        version=0.3.1
+        version=0.3.2
