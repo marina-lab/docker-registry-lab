@@ -3,10 +3,22 @@
    file: path=/var/docker_volumes/registry
          state=directory
 
- - name: run docker registry container
-   docker: image="registry:0.7.3"
+ - name: install boto (s3 client)
+   pip: name=boto
+        version=2.30.0
+
+ - name: create registry bucket
+   # Use the "fakes3" scheme to force Riak CS-compatible connection.
+   s3: bucket=registry
+       mode=create
+       s3_url="fakes3://{{ riak_cs_ip }}:{{ riak_cs_port }}"
+       aws_access_key={{ riak_cs_key }}
+       aws_secret_key={{ riak_cs_secret }}
+
+ - name: run docker registry container with Riak CS as backend using S3 api
+   docker: image="sprin/docker-registry:0.7.3.1"
            name="docker-reg"
-           ports=5000:5000
-           env="STORAGE_PATH=/registry,GUNICORN_WORKERS=1,SETTINGS_FLAVOR=local"
+           ports=5001:5000
+           env="SETTINGS_FLAVOR=s3,AWS_BUCKET=registry,AWS_SECRET={{ riak_cs_secret }},AWS_KEY={{ riak_cs_key }},AWS_SECURE=False,S3_HOST={{ riak_cs_ip }},S3_PORT={{ riak_cs_port }},S3_CALLING_FORMAT=boto.s3.connection.OrdinaryCallingFormat,STORAGE_PATH=/registry,GUNICORN_WORKERS=1,BOTO_DEBUG=2"
            volumes="/var/docker_volumes/registry:/registry"
            state=running

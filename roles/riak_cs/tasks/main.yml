@@ -13,18 +13,29 @@
            state=running
    register: riak_cs
 
+ - set_fact:
+     riak_cs_pid: "{{ riak_cs.ansible_facts.docker_containers[0].State.Pid }}"
+     riak_cs_port: 8080
+     riak_cs_ip:
+       "{{ riak_cs.ansible_facts.docker_containers[0].
+           NetworkSettings.IPAddress }}"
+
  - name: Extract Riak CS key
    shell: >
      sudo nsenter
-     --target {{ riak_cs.ansible_facts.docker_containers[0].State.Pid }}
+     --target {{ riak_cs_pid }}
      --mount --uts --ipc --net --pid
      egrep "admin_key" /etc/riak-cs/app.config | cut -d'"' -f2
-   register: riak_admin_key
+   register: riak_cs_key_reg
 
  - name: Extract Riak CS secret
    shell: >
      sudo nsenter
-     --target {{ riak_cs.ansible_facts.docker_containers[0].State.Pid }}
+     --target {{ riak_cs_pid }}
      --mount --uts --ipc --net --pid
      egrep "admin_secret" /etc/riak-cs/app.config | cut -d'"' -f2
-   register: riak_admin_secret
+   register: riak_cs_secret_reg
+
+ - set_fact:
+     riak_cs_key: "{{ riak_cs_key_reg.stdout }}"
+     riak_cs_secret: "{{ riak_cs_secret_reg.stdout }}"
