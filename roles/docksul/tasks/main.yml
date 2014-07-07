@@ -9,3 +9,7 @@
            volumes="/var/run/docker.sock:/tmp/docker.sock"
            env="DOCKER_HOST=unix:///tmp/docker.sock"
            state=running
+
+# Docker services will now auto-register and are queryable
+# *from inside the containers* with, eg:
+# dig consul-8500.service.dc1.consul. A

@@ -1,6 +1,11 @@
 # Consul Service Registration
 # Used as a multi-host service registry.
 # HTTP API is available over 8500.
+#
+# We bind port 53 of the container to port 53 of the docker0 bridge adapter,
+# enabling Consul to serve as the DNS for containers.
+# Requires the docker daemon to be run with:
+# --dns 172.17.42.1 --dns 8.8.8.8 --dns-search service.consul
  - name: create data directory for consul
    file: path={{ item }}
          state=directory
@@ -10,8 +15,7 @@
 
  - name: run Consul container
    docker: image="progrium/consul"
-           ports=8500:8500
-           publish_all_ports=True
+           ports=8500:8500,172.17.42.1:53:53/udp
            name="consul"
            hostname="consul"
            command="-server -bootstrap -data-dir /data -config-dir /etc/consul.d"

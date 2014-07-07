@@ -14,6 +14,12 @@
             dest=/bin/docker
             mode=0755
 
+ - name: Template Docker service file for systemd
+   # XXX: Overwritten when Docker is updated? Liable to break?
+   # Also sets Docker args to enable Consul to act as DNS
+   template: src=docker.service
+             dest=/usr/lib/systemd/system/docker.service
+
  - name: enable and start docker
    service: name=docker
             enabled=yes
