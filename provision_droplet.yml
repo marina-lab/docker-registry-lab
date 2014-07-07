@@ -1,0 +1,14 @@
+---
+# Provision the droplet with:
+# - Docker Engine
+# - Riak CS (object store)
+# - Docker Registry
+- hosts: newdroplets
+  user: root
+  vars_files:
+    - vars.yml
+  roles:
+    - common
+    - docker_host
+    - riak_cs
+    - docker_reg

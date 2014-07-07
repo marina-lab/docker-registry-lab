@@ -8,14 +8,14 @@
      ssh_pub_key="{{ my_pub_key }}"
    register: do_droplet
       
- - name: Create Digital Ocean droplet 512Mb/Fedora 19 x62/Region SF1
+ - name: Create Digital Ocean droplet 1GB/Fedora 19 x62/Region SF1
    digital_ocean: >   
      state=present
      command=droplet
      name="{{ droplet_name }}"
      client_id="{{ client_id }}"
      api_key="{{ api_key }}"
-     size_id=66
+     size_id=63 
      ssh_key_ids="{{ do_droplet.ssh_key.id }}"
      region_id=3
      image_id=3102879
@@ -29,3 +29,7 @@
    add_host: >
      name="{{ do_droplet.droplet.ip_address }}"
      groups=newdroplets
+
+ - name: Create inventory file for later use
+   template: src=templates/newdroplets
+             dest=./newdroplets

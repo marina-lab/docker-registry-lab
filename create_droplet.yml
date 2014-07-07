@@ -1,0 +1,19 @@
+---
+# First, create the droplet from the host.
+# This will create a "newdroplets" file in the current directory
+# to be referenced by the "provision_droplet" playbook.
+#
+# The reason for separating creation from provisioning into different
+# playbooks is that creation is not idempotent.
+- hosts: localhost
+  connection: local
+  serial: 1
+  gather_facts: no
+  vars_files:
+    - vars.yml
+  tasks:
+    - include: tasks/droplet.yml
+
+    - name: Sleep for 10 seconds to wait for SSH on droplet
+      command: /bin/sleep 10
+
