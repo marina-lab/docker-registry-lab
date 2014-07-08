@@ -3,16 +3,22 @@
    yum: name=docker-io
         state=present
 
+ - name: check Docker version
+   shell: docker version | grep "Server version" | cut -d" " -f3
+   register: docker_version
+
  - name: remove old docker binary
    # Note that the initial yum install is required to perform cgroups config
    file: path=/bin/docker
          state=absent
+   when: docker_version.stdout.find('1.1.0') == -1
 
- - name: use latest docker binary
+ - name: install Docker 1.1.0 unless already installed
    # Note that the initial yum install is required to perform cgroups config
-   get_url: url=https://get.docker.io/builds/Linux/x86_64/docker-latest
+   get_url: url=https://get.docker.io/builds/Linux/x86_64/docker-1.1.0
             dest=/bin/docker
             mode=0755
+   when: docker_version.stdout.find('1.1.0') == -1
 
  - name: Template Docker service file for systemd
    # XXX: Overwritten when Docker is updated? Liable to break?
@@ -24,6 +30,11 @@
    service: name=docker
             enabled=yes
             state=started
+
+ - name: copy docker-enter wrapper
+   copy: src=docker-enter
+         dest=/usr/local/bin
+         mode=0700
 
  - name: install docker client
    pip: name=docker-py
