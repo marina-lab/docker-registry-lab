@@ -5,12 +5,13 @@
 # - Docker Registry
 - hosts: newdroplets
   user: root
+  sudo: yes
   vars_files:
     - vars.yml
   roles:
-    - common
+    #- common
     - docker_host
     - consul
     - docksul
-    - riak_cs
-    - docker_reg
+    #- riak_cs
+    #- docker_reg
