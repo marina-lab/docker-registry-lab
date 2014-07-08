@@ -15,6 +15,18 @@ How to use
 Deploy to a fresh Centos 7 host and experiment. A playbook to create
 a Digital Ocean Droplet is included.
 
+Create droplet:
+
+.. code::
+
+   DROPLET_NAME=docker-registry ansible-playbook -i localhost create_droplet.yml
+
+Provision:
+
+.. code::
+
+   ansible-playbook -i newdroplets provision_droplet.yml
+
 Production-Readyness
 --------------------
 

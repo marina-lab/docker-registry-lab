@@ -4,7 +4,7 @@
  - name: run Docksul container
    docker: image="progrium/docksul"
            name="docksul"
-           command="0.0.0.0:8500"
+           command="{{ advertise_ip }}:8500"
            net=host
            volumes="/var/run/docker.sock:/tmp/docker.sock"
            env="DOCKER_HOST=unix:///tmp/docker.sock"
@@ -13,3 +13,7 @@
 # Docker services will now auto-register and are queryable
 # *from inside the containers* with, eg:
 # dig consul-8500.service.dc1.consul. A
+#
+# or via HTTP:
+# ETH0_IP=$(/sbin/ifconfig eth0 | grep 'inet ' | awk '{print $2}')
+# curl $ETH0_IP:8500/v1/agent/services
