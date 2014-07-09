@@ -1,3 +1,7 @@
  - name: install pip with yum
    yum: name=python-pip
         state=latest
+
+ - name: install httplib2 for ansible uri module
+   pip: name=httplib2
+        version=0.9

@@ -2,11 +2,15 @@
 # https://registry.hub.docker.com/u/hectcastro/riak-cs/
 #
 # For testing, we use a cluster of size one.
-# TODO: Use tagged image from private registry
-# TODO: Disable ssh daemon since nsenter works just fine, thanks.
+#
+# Port bindings:
+# Riak HTTP API: 8098:8098
+# Riak CS HTTP API: 8080:8080
+#
+# TODO: Use tagged image from private registry.
  - name: run Riak CS container
    docker: image="hectcastro/riak-cs"
-           ports=5000:5000
+           ports="{{ advertise_ip }}:8098:8098,{{ advertise_ip }}:8080:8080"
            env="DOCKER_RIAK_CS_CLUSTER_SIZE=1"
            name="riak-cs"
            publish_all_ports=True
@@ -15,31 +19,34 @@
 
  - set_fact:
      riak_cs_pid: "{{ riak_cs.ansible_facts.docker_containers[0].State.Pid }}"
-     riak_cs_port: 8080
-     riak_cs_ip:
-       "{{ riak_cs.ansible_facts.docker_containers[0].
-           NetworkSettings.IPAddress }}"
 
- - name: Extract Riak CS key
-   # Because this key is generated shortly after the first time the service
-   # is initialized, we need to retry until it is generated.
+
+ - name: extract Riak CS key
+ # Because this key is generated shortly after the first time the service
+ # is initialized, we need to retry until it is generated.
    shell: >
      sudo nsenter
      --target {{ riak_cs_pid }}
      --mount --uts --ipc --net --pid
      egrep "admin_key" /etc/riak-cs/app.config | cut -d '"' -f2
-   register: riak_cs_key_reg
-   until: riak_cs_key_reg.stdout.find("admin-key") == -1
+   register: riak_cs_key
+   until: riak_cs_key.stdout.find("admin-key") == -1
    retries: 10
 
- - name: Extract Riak CS secret
+ - name: extract Riak CS secret
    shell: >
      sudo nsenter
      --target {{ riak_cs_pid }}
      --mount --uts --ipc --net --pid
      egrep "admin_secret" /etc/riak-cs/app.config | cut -d'"' -f2
-   register: riak_cs_secret_reg
+   register: riak_cs_secret
 
- - set_fact:
-     riak_cs_key: "{{ riak_cs_key_reg.stdout }}"
-     riak_cs_secret: "{{ riak_cs_secret_reg.stdout }}"
+ - name: set Riak CS key in Consul
+   uri: url=http://consul.service.consul:8500/v1/kv/riak_cs_key
+        method=PUT
+        body="{{ riak_cs_key.stdout }}"
+
+ - name: set Riak CS secret in Consul
+   uri: url=http://consul.service.consul:8500/v1/kv/riak_cs_secret
+        method=PUT
+        body="{{ riak_cs_secret.stdout }}"

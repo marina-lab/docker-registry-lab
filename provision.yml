@@ -9,9 +9,9 @@
   vars_files:
     - vars.yml
   roles:
-    #- common
-    #- docker_host
+    - common
+    - docker_host
     - consul
     - docksul
-      #- riak_cs
-      #- docker_reg
+    - riak_cs
+    - docker_reg
