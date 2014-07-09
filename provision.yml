@@ -10,8 +10,8 @@
     - vars.yml
   roles:
     #- common
-    - docker_host
+    #- docker_host
     - consul
     - docksul
-    #- riak_cs
-    #- docker_reg
+      #- riak_cs
+      #- docker_reg
