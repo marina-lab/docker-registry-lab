@@ -7,18 +7,34 @@
    pip: name=boto
         version=2.30.0
 
+ - name: GET Riak CS key from Consul
+   uri: url=http://consul.service.consul:8500/v1/kv/riak_cs_key
+        return_content=yes
+   register: riak_cs_key
+
+ - set_fact:
+     riak_cs_key: "{{ riak_cs_key.json[0].Value | b64decode }}"
+
+ - name: GET Riak CS secret in Consul
+   uri: url=http://consul.service.consul:8500/v1/kv/riak_cs_secret
+        return_content=yes
+   register: riak_cs_secret
+
+ - set_fact:
+     riak_cs_secret: "{{ riak_cs_secret.json[0].Value | b64decode }}"
+
  - name: create registry bucket
    # Use the "fakes3" scheme to force Riak CS-compatible connection.
    s3: bucket=registry
        mode=create
-       s3_url="fakes3://{{ riak_cs_ip }}:{{ riak_cs_port }}"
+       s3_url="fakes3://riak-cs-8080.service.consul:8080"
        aws_access_key={{ riak_cs_key }}
        aws_secret_key={{ riak_cs_secret }}
 
  - name: run docker registry container with Riak CS as backend using S3 api
    docker: image="sprin/docker-registry:0.7.3.1"
            name="docker-reg"
-           ports=5001:5000
-           env="SETTINGS_FLAVOR=s3,AWS_BUCKET=registry,AWS_SECRET={{ riak_cs_secret }},AWS_KEY={{ riak_cs_key }},AWS_SECURE=False,S3_HOST={{ riak_cs_ip }},S3_PORT={{ riak_cs_port }},S3_CALLING_FORMAT=boto.s3.connection.OrdinaryCallingFormat,STORAGE_PATH=/registry,GUNICORN_WORKERS=1,BOTO_DEBUG=2"
+           ports={{ advertise_ip}}:5000:5000
+           env="SETTINGS_FLAVOR=s3,AWS_BUCKET=registry,AWS_SECRET={{ riak_cs_secret }},AWS_KEY={{ riak_cs_key }},AWS_SECURE=False,S3_HOST=riak-cs-8080.service.consul,S3_PORT=8080,S3_CALLING_FORMAT=boto.s3.connection.OrdinaryCallingFormat,STORAGE_PATH=/registry,GUNICORN_WORKERS=1,BOTO_DEBUG=2"
            volumes="/var/docker_volumes/registry:/registry"
            state=running
