@@ -1,0 +1,9 @@
+---
+ - name: fetch epel rpm
+   get_url: url={{ epel_rpm_url }}
+              dest={{ epel_rpm }}
+              mode=0644
+
+ - name: configure epel repo
+   command: creates={{ epel_repo_file }}
+              rpm -ivh {{ epel_rpm }}

@@ -1,6 +1,7 @@
  - include: fstab.yml
  - include: users.yml
  - include: security.yml
+ - include: epel.yml
  - include: python-pip.yml
 
  # disabled for testing, slow.
