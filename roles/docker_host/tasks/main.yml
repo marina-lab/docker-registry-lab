@@ -17,7 +17,7 @@
    # Note that the initial yum install is required to perform cgroups config
    get_url: url=https://get.docker.io/builds/Linux/x86_64/docker-1.1.0
             dest=/bin/docker
-            mode=0755
+            mode=0700
    when: docker_version.stdout.find('1.1.0') == -1
 
  - name: Template Docker service file for systemd
