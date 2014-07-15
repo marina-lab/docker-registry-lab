@@ -12,7 +12,7 @@
 
 # Docker services will now auto-register and are queryable
 # *from inside the containers* with, eg:
-# dig consul-8500.service.dc1.consul. A
+# dig consul-8500.service.consul. A
 #
 # or via HTTP:
 # ETH0_IP=$(/sbin/ifconfig eth0 | grep 'inet ' | awk '{print $2}')
