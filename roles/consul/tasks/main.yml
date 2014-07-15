@@ -13,7 +13,7 @@
 # --dns 172.17.42.1 --dns 8.8.8.8 --dns-search service.consul
 #
 # Port bindings:
-# DNS server: 172.17.42.1:53:53 and localhost:53:53
+# DNS server: 172.17.42.1:53:53
 # HTTP API: 8500:8500
 # RPC endpoint: 8400:8400
 # Serf LAN port: 8301:8301
