@@ -2,5 +2,5 @@
   mount: name=/
          src=/dev/vda1
          fstype=ext4
-         opts=rw,errors=remount-ro,data=ordered,noatime,norelatime,nodiratime,user_xattr
+         opts=rw,errors=remount-ro,data=ordered,noatime,norelatime,nodiratime
          state=present
