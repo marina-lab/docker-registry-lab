@@ -1,4 +1,4 @@
- - name: Deploy public key
+ - name: deploy public key
    digital_ocean: >
      state=present
      command=ssh
@@ -8,7 +8,7 @@
      ssh_pub_key="{{ my_pub_key }}"
    register: do_droplet
       
- - name: Create Digital Ocean droplet 1GB/Fedora 19 x62/Region SF1
+ - name: create Digital Ocean droplet 1GB/Centos 7/Region SF1
    digital_ocean: >   
      state=present
      command=droplet
@@ -18,18 +18,24 @@
      size_id=63 
      ssh_key_ids="{{ do_droplet.ssh_key.id }}"
      region_id=3
-     image_id=3102879
+     image_id=4856048
      wait_timeout=600
    register: do_droplet
  
  - debug: msg="ID is {{ do_droplet.droplet.id }}"
  - debug: msg="IP is {{ do_droplet.droplet.ip_address }}"
      
- - name: Add new droplet to inventory
+ - name: add new droplet to inventory
    add_host: >
      name="{{ do_droplet.droplet.ip_address }}"
      groups=newdroplets
 
- - name: Create inventory file for later use
+ - name: create inventory file for later use
    template: src=templates/newdroplets
              dest=./newdroplets
+
+ - name: "wait for {{ droplet_name }}'s sshd to come up"
+   wait_for: >
+     host={{ do_droplet.droplet.ip_address }}
+     port=22
+     state=started
