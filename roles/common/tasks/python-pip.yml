@@ -1,6 +1,6 @@
  - name: install pip with yum
    yum: name=python-pip
-        state=latest
+        state=installed
 
  - name: install httplib2 for ansible uri module
    pip: name=httplib2
