@@ -10,7 +10,7 @@
 # TODO: Use tagged image from private registry.
  - name: run Riak CS container
    docker: image="hectcastro/riak-cs"
-           ports="{{ advertise_ip }}:8098:8098,{{ advertise_ip }}:8080:8080"
+           ports="{{ advertise_ip }}:8098:8098,{{ advertise_ip }}:8080:8080,SERVICE_8080_NAME=riak-cs""
            env="DOCKER_RIAK_CS_CLUSTER_SIZE=1"
            name="riak-cs"
            publish_all_ports=True

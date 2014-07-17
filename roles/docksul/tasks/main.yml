@@ -15,5 +15,5 @@
 # dig consul-8500.service.consul. A
 #
 # or via HTTP:
-# ETH0_IP=$(/sbin/ifconfig eth0 | grep 'inet ' | awk '{print $2}')
+# ETH0_IP=$(ip addr list eth0 | awk '/inet /{sub(/\/[0-9]+/,"",$2); print $2}')
 # curl $ETH0_IP:8500/v1/agent/services
