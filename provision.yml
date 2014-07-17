@@ -16,7 +16,7 @@
     - common
     - docker_host
     - consul
-    - docksu\
+    - docksul
     - riak_cs
     - docker_reg
 
