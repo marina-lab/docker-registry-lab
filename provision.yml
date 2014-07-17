@@ -1,10 +1,14 @@
 ---
-# Provision the droplet with:
+# Provision the droplet with roles:
 # - Docker Engine
+# - Consul (service discovery and routing)
 # - Riak CS (object store)
 # - Docker Registry
+
+# Provision with do_admin user, unless is_first_run is defined, then with root.
+# Reboot after first run.
 - hosts: newdroplets
-  user: root
+  user: "{{ do_admin if is_first_run is not defined else 'root' }}"
   sudo: yes
   vars_files:
     - vars.yml
@@ -12,6 +16,23 @@
     - common
     - docker_host
     - consul
-    - docksul
+    - docksu\
     - riak_cs
     - docker_reg
+
+  tasks:
+    - name: reboot host
+      command: /bin/systemctl reboot --no-block
+      async: 0
+      poll: 0
+      ignore_errors: true
+      when: is_first_run is defined
+
+    - name: wait for host to come back
+      local_action: >
+        wait_for
+        host={{ inventory_hostname }}
+        port=22
+        state=started
+      sudo: false
+      when: is_first_run is defined
