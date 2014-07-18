@@ -27,13 +27,15 @@
      - /var/docker_volumes/consul/data
 
  - name: run Consul container
-   docker: image="progrium/consul"
+   docker: >
+     image="progrium/consul"
+     command="-server -advertise {{ advertise_ip }} -bootstrap -data-dir /data -config-dir /etc/consul.d"
+     env="SERVICE_8500_NAME=consul"
      ports="{{ advertise_ip }}:8300:8300,{{ advertise_ip }}:8301:8301,{{advertise_ip}}:8301:8301/udp,{{ advertise_ip }}:8302:8302,{{ advertise_ip }}:8302:8302/udp,{{ advertise_ip }}:8400:8400,{{ advertise_ip }}:8500:8500,{{ docker_bip }}:53:53/udp"
-           name="consul"
-           hostname="{{ ansible_hostname }}"
-           command="-server -advertise {{ advertise_ip }} -bootstrap -data-dir /data -config-dir /etc/consul.d"
-           volumes="/var/docker_volumes/consul/consul.d:/etc/consul.d,/var/docker_volumes/consul/data:/data"
-           state=running
+     name="consul"
+     hostname="{{ ansible_hostname }}"
+     volumes="/var/docker_volumes/consul/consul.d:/etc/consul.d,/var/docker_volumes/consul/data:/data"
+     state=running
 
  - name: use consul as local dns resolver
    lineinfile: >
