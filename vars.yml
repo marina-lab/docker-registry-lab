@@ -1,4 +1,4 @@
-droplet_name: "{{ lookup('env','DROPLET_NAME') }}"
+droplet_name: docker-registry
 do_admin: "{{ lookup('env','USER') }}"
 my_pub_key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
 
