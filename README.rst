@@ -1,3 +1,4 @@
+===================
 docker-registry-lab
 ===================
 
@@ -9,26 +10,82 @@ also deployed as a container.
 
 To tie the Registry to Riak, a dockerized Consul is deployed.
 
+A separate playbook is included to launch a new instance (droplet)
+on Digital Ocean (DO) with Centos 7.
+
 How to use
-----------
+==========
 
-Deploy to a fresh Centos 7 host and experiment. A playbook to create
-a Digital Ocean Droplet is included.
+Use the Forks, Luke
+-------------------
 
-Create droplet:
+Mainline Ansible does not have support for tagged Docker images yet, so you
+will need to run a fork that includes the PR in #7739, such as sprin/ansible:
 
 .. code::
 
-   DROPLET_NAME=docker-registry ansible-playbook -i localhost create_droplet.yml
+   git clone https://github.com/sprin/ansible
 
-Provision:
+Note that this also uses a fork of dotcloud/docker-registry, in order to
+enable connection to a Riak CS backend (#461). The fork is at
+sprin/docker-registry, and the image used by this playbook is in the public
+Docker registry under the same name.
+
+Environment variables and other assumptions
+-------------------------------------------
+
+All assumptions about the control machine and the desired target configuration
+that can be changed are in vars.yml.
+
+On the control machine, the `USER` environment variable will be used as the
+default admin user. The ssh public key to be used with DO and deployed to the
+target is assumed to be in ~/.ssh/id_rsa.pub.
+
+Additionally, if the included playbook to launch a new droplet is used, the
+following environment variables are needed to authenticate with Digital Ocean:
+
+.. code::
+
+   DIGITALOCEAN_API_KEY
+   DIGITALOCEAN_CLIENT_ID
+
+All of these are overridable with `-e` options to `ansible-playbook`.
+
+Deploy
+------
+
+Deploy to a fresh Centos 7 host and experiment. A playbook to create
+a fresh Centos 7 host Digital Ocean droplet is included.
+
+Create droplet
+..............
+
+.. code::
+
+   ansible-playbook -i localhost create_droplet.yml \
+       -e droplet_name=docker-registry \
+
+Provision
+.........
+
+You must explicitly pass `is_first_run=true` on the first run.
+This will ssh in as root, create the admin user, and reboot the machine
+after provisioning.
+
+.. code::
+
+   ansible-playbook -i newdroplets provision_droplet.yml \
+       -e is_first_run=true
+
+On subsequent runs, the admin user will be used for ssh. Root login over ssh
+is disabled in the first run.
 
 .. code::
 
    ansible-playbook -i newdroplets provision_droplet.yml
 
 Production-Readyness
---------------------
+====================
 
 (not has)
 
@@ -38,8 +95,9 @@ deploy Riak CS to at least three nodes for availability and fault tolerance.
 It's probably also not a good idea to expose this Registry as configured over
 the internet.
 
+We are working on both of these.
+
 TODOs:
-------
- - Update to deploy to Centos 7 host (currently assumes Fedora 19 host)
+======
  - Deploy Consul and Riak to more than one node
  - Harden security config
