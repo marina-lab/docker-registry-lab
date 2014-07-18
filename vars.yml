@@ -2,6 +2,9 @@ droplet_name: docker-registry
 do_admin: "{{ lookup('env','USER') }}"
 my_pub_key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
 
+ssh_group: sshusers
+sudo_group: sudousers
+
 # digital ocean credentials 
 api_key: "{{ lookup('env','DIGITALOCEAN_API_KEY') }}"
 client_id: "{{ lookup('env','DIGITALOCEAN_CLIENT_ID') }}"
@@ -13,5 +16,8 @@ advertise_ip: "{{ ansible_eth0.ipv4.address }}"
 docker_bip: 172.17.42.1
 docker_bip_cidr: "{{ docker_bip }}/16"
       
-ssh_group: sshusers
-sudo_group: sudousers
+# images
+consul_image: progrium/consul
+docksul_image: progrium/docksul
+riak_cs_image: hectcastro/riak-cs
+docker_reg_image: sprin/docker-registry:0.7.3.2
