@@ -28,11 +28,11 @@
  - name: add new droplet to inventory
    add_host: >
      name="{{ do_droplet.droplet.ip_address }}"
-     groups=newdroplets
+     groups=docker_registry_hosts
 
  - name: create inventory file for later use
-   template: src=templates/newdroplets
-             dest=./newdroplets
+   template: src=templates/docker_registry_hosts
+             dest=./docker_registry_hosts
 
  - name: "wait for {{ droplet_name }}'s sshd to come up"
    wait_for: >

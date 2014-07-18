@@ -25,6 +25,15 @@ will need to run a fork that includes the PR in #7739, such as sprin/ansible:
 .. code::
 
    git clone https://github.com/sprin/ansible
+   cd ./ansible
+   source ./hacking/env-setup
+   sudo pip install paramiko PyYAML jinja2 httplib2 dopy
+
+You may need the following system libraries:
+
+.. code::
+
+    sudo yum install gcc python-devel
 
 Note that this also uses a fork of dotcloud/docker-registry, in order to
 enable connection to a Riak CS backend (#461). The fork is at
@@ -63,7 +72,7 @@ Create droplet
 .. code::
 
    ansible-playbook -i localhost create_droplet.yml \
-       -e droplet_name=docker-registry \
+       -e droplet_name=docker-registry
 
 Provision
 .........
@@ -74,7 +83,7 @@ after provisioning.
 
 .. code::
 
-   ansible-playbook -i newdroplets provision_droplet.yml \
+   ansible-playbook -i docker_registry_hosts provision_droplet.yml \
        -e is_first_run=true
 
 On subsequent runs, the admin user will be used for ssh. Root login over ssh
@@ -82,7 +91,7 @@ is disabled in the first run.
 
 .. code::
 
-   ansible-playbook -i newdroplets provision_droplet.yml
+   ansible-playbook -i docker_registry_hosts provision_droplet.yml
 
 Production-Readyness
 ====================

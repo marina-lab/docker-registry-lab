@@ -7,7 +7,7 @@
 
 # Provision with do_admin user, unless is_first_run is defined, then with root.
 # Reboot after first run.
-- hosts: newdroplets
+- hosts: docker_registry_hosts
   user: "{{ do_admin if is_first_run is not defined else 'root' }}"
   sudo: yes
   vars_files:

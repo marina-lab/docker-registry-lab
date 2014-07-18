@@ -1,6 +1,6 @@
 ---
 # First, create the droplet from the host.
-# This will create a "newdroplets" file in the current directory
+# This will create a "docker_registry_hosts" file in the current directory
 # to be referenced by the "provision_droplet" playbook.
 #
 # The reason for separating creation from provisioning into different
