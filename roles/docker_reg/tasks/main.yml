@@ -27,7 +27,7 @@
    # Use the "fakes3" scheme to force Riak CS-compatible connection.
    s3: bucket=registry
        mode=create
-       s3_url="fakes3://riak-cs-8080.service.consul:8080"
+       s3_url="fakes3://riak-cs.service.consul:8080"
        aws_access_key={{ riak_cs_key }}
        aws_secret_key={{ riak_cs_secret }}
 
