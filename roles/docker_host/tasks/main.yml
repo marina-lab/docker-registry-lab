@@ -23,6 +23,9 @@
  - name: Template Docker service file for systemd
    # XXX: Overwritten when Docker is updated? Liable to break?
    # Also sets Docker args to enable Consul to act as DNS
+   # TODO: trigger systemctl daemon-reload and systemctl restart docker
+   # TODO: use fixed bridge, see:
+   # http://jpetazzo.github.io/2013/10/16/configure-docker-bridge-network/
    template: src=docker.service
              dest=/usr/lib/systemd/system/docker.service
 
