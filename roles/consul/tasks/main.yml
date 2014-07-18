@@ -35,6 +35,8 @@
            volumes="/var/docker_volumes/consul/consul.d:/etc/consul.d,/var/docker_volumes/consul/data:/data"
            state=running
 
- - name: use consul as local dns resolver (template resolv.conf)
-   template: src=resolv.conf
-             dest=/etc/resolv.conf
+ - name: use consul as local dns resolver
+   lineinfile: >
+     dest=/etc/sysconfig/network-scripts/ifcfg-eth0
+     regexp=^DNS1=
+     line=DNS1=172.17.42.1
