@@ -83,7 +83,7 @@ after provisioning.
 
 .. code::
 
-   ansible-playbook -i docker_registry_hosts provision_droplet.yml \
+   ansible-playbook -i docker_registry_hosts provision.yml \
        -e is_first_run=true
 
 On subsequent runs, the admin user will be used for ssh. Root login over ssh
@@ -91,7 +91,7 @@ is disabled in the first run.
 
 .. code::
 
-   ansible-playbook -i docker_registry_hosts provision_droplet.yml
+   ansible-playbook -i docker_registry_hosts provision.yml
 
 Production-Readyness
 ====================
