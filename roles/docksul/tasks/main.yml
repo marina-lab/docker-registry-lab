@@ -1,11 +1,9 @@
 # Docksul Docker-Consul bridge
 # Automatically registers containers with published ports as Consul services.
-# Uses the hosts network configuration.
  - name: run Docksul container
    docker: image="progrium/docksul"
            name="docksul"
            command="{{ advertise_ip }}:8500"
-           net=host
            volumes="/var/run/docker.sock:/tmp/docker.sock"
            env="DOCKER_HOST=unix:///tmp/docker.sock"
            state=running
