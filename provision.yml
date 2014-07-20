@@ -22,6 +22,10 @@
     - docker_reg
 
   tasks:
+    - name: flush handlers before reboot
+      meta: flush_handlers
+      when: is_first_run is defined
+
     - name: reboot host
       command: /bin/systemctl reboot --no-block
       async: 0
