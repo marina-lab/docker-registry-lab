@@ -1,1 +1,3 @@
 /docker_registry_hosts
+*.swp
+*.swo

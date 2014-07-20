@@ -18,6 +18,7 @@
     - consul
     - docksul
     - riak_cs
+    - nginx
     - docker_reg
 
   tasks:

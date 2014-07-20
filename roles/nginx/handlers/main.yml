@@ -1,0 +1,6 @@
+ - name: reload nginx
+   shell: >
+     sudo nsenter
+     --target {{ nginx_pid }}
+     --mount --uts --ipc --net --pid
+     nginx -s reload

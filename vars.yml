@@ -20,4 +20,5 @@ docker_bip_cidr: "{{ docker_bip }}/16"
 consul_image: progrium/consul
 docksul_image: progrium/docksul
 riak_cs_image: hectcastro/riak-cs
+nginx_image: nginx:1.7.1
 docker_reg_image: sprin/docker-registry:0.7.3.2
