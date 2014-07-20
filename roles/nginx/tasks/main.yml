@@ -9,13 +9,6 @@
    notify:
      - reload nginx
 
- - name: copy mime.types
-   copy: src=mime.types
-         dest=/var/docker_volumes/nginx/nginx/mime.types
-         mode=644
-   notify:
-     - reload nginx
-
  - name: run nginx container
    docker: image={{ nginx_image }}
            name="nginx"
