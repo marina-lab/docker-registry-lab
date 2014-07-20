@@ -17,17 +17,11 @@
            state=running
    register: riak_cs
 
- - set_fact:
-     riak_cs_pid: "{{ riak_cs.ansible_facts.docker_containers[0].State.Pid }}"
-
-
  - name: extract Riak CS key
  # Because this key is generated shortly after the first time the service
  # is initialized, we need to retry until it is generated.
    shell: >
-     sudo nsenter
-     --target {{ riak_cs_pid }}
-     --mount --uts --ipc --net --pid
+     /usr/local/bin/docker-enter riak-cs
      egrep "admin_key" /etc/riak-cs/app.config | cut -d '"' -f2
    register: riak_cs_key
    until: riak_cs_key.stdout.find("admin-key") == -1
@@ -35,9 +29,7 @@
 
  - name: extract Riak CS secret
    shell: >
-     sudo nsenter
-     --target {{ riak_cs_pid }}
-     --mount --uts --ipc --net --pid
+     /usr/local/bin/docker-enter riak-cs
      egrep "admin_secret" /etc/riak-cs/app.config | cut -d'"' -f2
    register: riak_cs_secret
 
