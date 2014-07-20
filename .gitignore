@@ -1,3 +1,4 @@
 /docker_registry_hosts
+/vars.json
 *.swp
 *.swo

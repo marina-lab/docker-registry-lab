@@ -59,6 +59,8 @@ following environment variables are needed to authenticate with Digital Ocean:
    DIGITALOCEAN_CLIENT_ID
 
 All of these are overridable with `-e` options to `ansible-playbook`.
+For convenience, you may want to create a vars.json file and load it with
+`-e "@vars.json"`.
 
 Deploy
 ------
