@@ -1,18 +1,29 @@
+ - name: create volume on host for nginx
+   file: path=/var/docker_volumes/nginx/nginx/conf.d
+         state=directory
+
+ - name: template nginx.conf
+   template: src=nginx.conf
+             dest=/var/docker_volumes/nginx/nginx.conf
+             mode=644
+   notify:
+     - reload nginx
+
+ - name: copy mime.types
+   copy: src=mime.types
+         dest=/var/docker_volumes/nginx/nginx/mime.types
+         mode=644
+   notify:
+     - reload nginx
+
  - name: run nginx container
    docker: image={{ nginx_image }}
            name="nginx"
            ports="{{ advertise_ip }}:80:80"
-           volumes="/some/nginx.conf:/etc/nginx.conf:ro"
+           volumes="/var/docker_volumes/nginx/nginx.conf:/etc/nginx.conf,/var/docker_volumes/nginx/nginx:/etc/nginx"
            state=running
    register: nginx
 
  - set_fact:
      nginx_pid: "{{ nginx.ansible_facts.docker_containers[0].State.Pid }}"
 
- - name: copy nginx.conf
-   sudo: yes
-   template: src=nginx.conf
-             dest=/etc/nginx.conf
-             mode=644
-   notify:
-     - reload nginx

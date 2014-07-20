@@ -10,7 +10,7 @@ api_key: "{{ lookup('env','DIGITALOCEAN_API_KEY') }}"
 client_id: "{{ lookup('env','DIGITALOCEAN_CLIENT_ID') }}"
 
 # nginx server_name of Docker Registry service.
-docker_registry_server_name: "{{ my.docker.registry.com }}"
+docker_registry_server_name: my.docker.registry.com
 
 # ip address services will be bound to
 advertise_ip: "{{ ansible_eth0.ipv4.address }}"
