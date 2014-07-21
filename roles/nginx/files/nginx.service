@@ -7,6 +7,7 @@ Requires=docker.service
 Restart=always
 ExecStart=/bin/docker start -a nginx
 ExecStop=/bin/docker stop nginx
+ExecReload=/bin/docker kill -s HUP nginx
 
 [Install]
 WantedBy=multi-user.target
