@@ -1,0 +1,12 @@
+[Unit]
+Description=Docksul Service
+After=consul.service
+Requires=consul.service
+
+[Service]
+Restart=always
+ExecStart=/bin/docker start -a docksul
+ExecStop=/bin/docker stop docksul
+
+[Install]
+WantedBy=multi-user.target

@@ -20,3 +20,12 @@
  - set_fact:
      nginx_pid: "{{ nginx.ansible_facts.docker_containers[0].State.Pid }}"
 
+ - name: copy nginx.service
+   copy: >
+     src=nginx.service
+     dest=/usr/lib/systemd/system/nginx.service
+
+ - name: enable and start nginx.service
+   service: name=nginx
+            enabled=yes
+            state=started

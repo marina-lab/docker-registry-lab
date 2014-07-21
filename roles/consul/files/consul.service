@@ -1,0 +1,12 @@
+[Unit]
+Description=Consul Service
+After=docker.service
+Requires=docker.service
+
+[Service]
+Restart=always
+ExecStart=/bin/docker start -a consul
+ExecStop=/bin/docker stop consul
+
+[Install]
+WantedBy=multi-user.target

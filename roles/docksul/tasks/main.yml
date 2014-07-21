@@ -8,6 +8,16 @@
            env="DOCKER_HOST=unix:///tmp/docker.sock"
            state=running
 
+ - name: copy docksul.service
+   copy: >
+     src=docksul.service
+     dest=/usr/lib/systemd/system/docksul.service
+
+ - name: enable and start docksul.service
+   service: name=docksul
+            enabled=yes
+            state=started
+
 # Docker services will now auto-register and are queryable
 # *from inside the containers* with, eg:
 # dig consul-8500.service.consul. A

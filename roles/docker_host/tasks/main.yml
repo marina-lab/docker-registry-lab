@@ -20,12 +20,9 @@
             mode=0700
    when: docker_version.stdout.find('1.1.0') == -1
 
- - name: Template Docker service file for systemd
-   # XXX: Overwritten when Docker is updated? Liable to break?
+ - name: template docker.service
    # Also sets Docker args to enable Consul to act as DNS
    # TODO: trigger systemctl daemon-reload and systemctl restart docker
-   # TODO: use fixed bridge, see:
-   # http://jpetazzo.github.io/2013/10/16/configure-docker-bridge-network/
    template: src=docker.service
              dest=/usr/lib/systemd/system/docker.service
 

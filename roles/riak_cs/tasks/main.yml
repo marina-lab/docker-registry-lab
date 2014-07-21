@@ -17,6 +17,16 @@
            state=running
    register: riak_cs
 
+ - name: copy riak-cs.service
+   copy: >
+     src=riak-cs.service
+     dest=/usr/lib/systemd/system/riak-cs.service
+
+ - name: enable and start riak-cs.service
+   service: name=riak-cs
+            enabled=yes
+            state=started
+
  - name: extract Riak CS key
  # Because this key is generated shortly after the first time the service
  # is initialized, we need to retry until it is generated.

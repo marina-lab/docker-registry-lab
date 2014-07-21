@@ -39,6 +39,16 @@
            volumes="/var/docker_volumes/registry:/registry"
            state=running
 
+ - name: copy docker-reg.service
+   copy: >
+     src=docker-reg.service
+     dest=/usr/lib/systemd/system/docker-reg.service
+
+ - name: enable and start docker-reg.service
+   service: name=docker-reg
+            enabled=yes
+            state=started
+
  - name: template docker_registry_nginx.conf
    sudo: yes
    template: src=docker_registry_nginx.conf

@@ -1,0 +1,19 @@
+[Unit]
+Description=Docker Registry Service
+After=riak-cs.service
+Requires=riak-cs.service
+
+[Service]
+# Docker Registry will quit if it cannot connect to Riak CS, and
+# the Riak CS container takes time to actually start accepting connections.
+# Therefore, we expect that the Registry will need to restart several times
+# before making a successful connection to Riak CS, therefore a 5 second
+# wait between restarts.
+
+Restart=always
+RestartSec=5
+ExecStart=/bin/docker start -a docker-reg
+ExecStop=/bin/docker stop docker-reg
+
+[Install]
+WantedBy=multi-user.target

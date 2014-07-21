@@ -37,6 +37,16 @@
      volumes="/var/docker_volumes/consul/consul.d:/etc/consul.d,/var/docker_volumes/consul/data:/data"
      state=running
 
+ - name: copy consul.service
+   copy: >
+     src=consul.service
+     dest=/usr/lib/systemd/system/consul.service
+
+ - name: enable and start consul.service
+   service: name=consul
+            enabled=yes
+            state=started
+
  - name: use consul as local dns resolver
    lineinfile: >
      dest=/etc/sysconfig/network-scripts/ifcfg-eth0
