@@ -5,10 +5,10 @@
 # - Riak CS (object store)
 # - Docker Registry
 
-# Provision with do_admin user, unless is_first_run is defined, then with root.
+# Provision with admin_user, unless is_first_run is defined, then with root.
 # Reboot after first run.
 - hosts: docker_registry_hosts
-  user: "{{ do_admin if is_first_run is not defined else 'root' }}"
+  user: "{{ admin_user if is_first_run is not defined else 'root' }}"
   sudo: yes
   vars_files:
     - vars.yml

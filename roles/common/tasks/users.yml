@@ -12,11 +12,11 @@
            
 - name: Create admin user
   user: >
-    name="{{ do_admin }}"
+    name="{{ admin_user }}"
     comment="Administrator account"
     state=present
     groups="{{ sudo_group }},{{ ssh_group }}"
     append=yes
 
 - name: Deploy ssh public key 
-  authorized_key: user="{{ do_admin }}" key="{{ my_pub_key }}"
+  authorized_key: user="{{ admin_user }}" key="{{ my_pub_key }}"
