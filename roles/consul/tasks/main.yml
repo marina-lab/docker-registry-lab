@@ -57,3 +57,18 @@
  - name: restart NetworkManager
    service: name=NetworkManager state=restarted
    when: result.changed
+
+ - name: create htpasswd for consul
+   htpasswd: >
+     path=/var/docker_volumes/nginx/nginx/conf.d/consul_ui.htpasswd
+     name={{ do_admin }}
+     password={{ do_admin_htpasswd }}
+     mode=0640
+
+ - name: template consul_ui_nginx.conf
+   sudo: yes
+   template: src=consul_ui_nginx.conf
+             dest=/var/docker_volumes/nginx/nginx/conf.d/consul_ui.conf
+             mode=644
+   notify:
+     - reload nginx

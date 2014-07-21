@@ -52,7 +52,7 @@
  - name: template docker_registry_nginx.conf
    sudo: yes
    template: src=docker_registry_nginx.conf
-             dest=/var/docker_volumes/nginx/nginx/conf.d/docker_registry_nginx.conf
+             dest=/var/docker_volumes/nginx/nginx/conf.d/docker_registry.conf
              mode=644
    notify:
      - reload nginx

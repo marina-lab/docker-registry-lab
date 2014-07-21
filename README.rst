@@ -10,6 +10,8 @@ also deployed as a container.
 
 To tie the Registry to Riak, a dockerized Consul is deployed.
 
+Nginx fronts the Registry, proxying requests using Consul as a DNS resolver.
+
 A separate playbook is included to launch a new instance (droplet)
 on Digital Ocean (DO) with Centos 7.
 
@@ -94,6 +96,18 @@ is disabled in the first run.
 .. code::
 
    ansible-playbook -i docker_registry_hosts provision.yml
+
+Use
+...
+
+Tag images and push to the configured `docker_registry_server_name`, on port
+80. It's recommended you create A records matching the server name on your own
+domain that point to this host, but for testing, editing /etc/hosts works
+just as well.
+
+The Consul UI is also accessible via `consul_ui_server_name`, on port 80. This
+is protected by basic auth, and on the first run, a file will be created with
+the password at ~/credentials/docker-registry/admin_htpasswd'.
 
 Production-Readyness
 ====================
