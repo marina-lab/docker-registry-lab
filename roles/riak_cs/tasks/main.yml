@@ -46,11 +46,11 @@
    changed_when: False
 
  - name: set Riak CS key in Consul
-   uri: url=http://consul.service.consul:8500/v1/kv/riak_cs_key
+   uri: url=http://consul.service.consul:8500/v1/kv/riak-cs/AWS_KEY
         method=PUT
         body="{{ riak_cs_key.stdout }}"
 
  - name: set Riak CS secret in Consul
-   uri: url=http://consul.service.consul:8500/v1/kv/riak_cs_secret
+   uri: url=http://consul.service.consul:8500/v1/kv/riak-cs/AWS_SECRET
         method=PUT
         body="{{ riak_cs_secret.stdout }}"
