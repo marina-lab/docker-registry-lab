@@ -7,13 +7,30 @@
    pip: name=boto
         version=2.30.0
 
+ - name: GET Riak CS key from Consul
+   uri: url=http://consul.service.consul:8500/v1/kv/riak-cs/AWS_KEY
+        return_content=yes
+   register: riak_cs_key
+
+ - set_fact:
+     riak_cs_key: "{{ riak_cs_key.json[0].Value | b64decode }}"
+
+ - name: GET Riak CS secret in Consul
+   uri: url=http://consul.service.consul:8500/v1/kv/riak-cs/AWS_SECRET
+        return_content=yes
+   register: riak_cs_secret
+
+ - set_fact:
+     riak_cs_secret: "{{ riak_cs_secret.json[0].Value | b64decode }}"
+
  - name: create registry bucket
    # Use the "fakes3" scheme to force Riak CS-compatible connection.
-   s3: bucket=registry
-       mode=create
-       s3_url="fakes3://riak-cs.service.consul:8080"
-       aws_access_key={{ riak_cs_key }}
-       aws_secret_key={{ riak_cs_secret }}
+   s3: >
+     bucket=registry
+     mode=create
+     s3_url="fakes3://riak-cs.service.consul:8080"
+     aws_access_key={{ riak_cs_key }}
+     aws_secret_key={{ riak_cs_secret }}
 
  - name: set docker-reg environment vars in Consul
    uri: url=http://consul.service.consul:8500/v1/kv/docker-reg/{{ item.key }}
@@ -31,8 +48,10 @@
      BOTO_DEBUG: 2
      SERVICE_NAME: registry
 
- - name: run pull docker registry container
-   debug: msg={{ docker_reg_image }}
+ - name: pull docker registry container
+   docker_pull: >
+     repo=sprin/docker-registry
+     tag=0.7.3.2
 
  - name: template docker-reg.service
    template: >
