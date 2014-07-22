@@ -15,12 +15,12 @@ RestartSec=5
 
 # Use envconsul to create env-file with docker-reg env vars
 ExecStartPre=/bin/sh -c "/usr/bin/env -i \
-    /bin/envconsul -addr=consul.service.consul:8500 docker-reg \
+    /bin/envconsul -addr=consul-http.service.consul:8500 docker-reg \
     /usr/bin/env > /tmp/docker-reg.env"
 
 # Add riak-cs keys to env-file
 ExecStartPre=/bin/sh -c "/usr/bin/env -i \
-    /bin/envconsul -addr=consul.service.consul:8500 riak-cs \
+    /bin/envconsul -addr=consul-http.service.consul:8500 riak-cs \
     /usr/bin/env >> /tmp/docker-reg.env"
 
 # Start an existing container, or run a new one if one does not exist.
@@ -29,6 +29,7 @@ ExecStart=/bin/bash -c \
     || /bin/docker run \
     --name docker-reg \
     --env-file /tmp/docker-reg.env \
+    -e SERVICE_NAME=registry \
     -p {{ advertise_ip }}:5000:5000 \
     -v /var/docker_volumes/registry:/registry \
     {{ docker_reg_image }}"

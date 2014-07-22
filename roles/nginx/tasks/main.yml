@@ -13,21 +13,15 @@
    docker_pull: >
      repo={{ nginx_image }}
 
- - name: run nginx container
-   docker: image={{ nginx_image }}
-           name="nginx"
-           ports="{{ advertise_ip }}:80:80"
-           volumes="/var/docker_volumes/nginx/nginx.conf:/etc/nginx.conf,/var/docker_volumes/nginx/nginx:/etc/nginx"
-           state=running
-   register: nginx
-
- - set_fact:
-     nginx_pid: "{{ nginx.ansible_facts.docker_containers[0].State.Pid }}"
-
  - name: copy nginx.service
-   copy: >
+   template: >
      src=nginx.service
      dest=/usr/lib/systemd/system/nginx.service
+   register: nginx_unit
+
+ - name: systemctl daemon-reload
+   command: /bin/systemctl daemon-reload
+   when: nginx_unit.changed
 
  - name: enable and start nginx.service
    service: name=nginx

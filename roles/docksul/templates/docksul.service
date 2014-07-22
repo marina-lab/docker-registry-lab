@@ -1,0 +1,23 @@
+[Unit]
+Description=Docksul Service
+After=consul.service
+Requires=consul.service
+
+[Service]
+Restart=on-failure
+
+ExecStart=/bin/bash -c \
+    "/bin/docker start -a docksul \
+    || /bin/docker run \
+    --name docksul \
+    -v /var/run/docker.sock:/tmp/docker.sock \
+    -e DOCKER_HOST=unix:///tmp/docker.sock \
+    {{ docksul_image }} \
+    {{advertise_ip }}:8500"
+
+ExecStop=/bin/bash -c \
+    "/bin/docker stop docksul \
+    && /bin/docker rm docksul"
+
+[Install]
+WantedBy=multi-user.target

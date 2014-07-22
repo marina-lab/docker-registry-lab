@@ -8,7 +8,7 @@
         version=2.30.0
 
  - name: GET Riak CS key from Consul
-   uri: url=http://consul.service.consul:8500/v1/kv/riak-cs/AWS_KEY
+   uri: url=http://consul-http.service.consul:8500/v1/kv/riak-cs/AWS_KEY
         return_content=yes
    register: riak_cs_key
 
@@ -16,7 +16,7 @@
      riak_cs_key: "{{ riak_cs_key.json[0].Value | b64decode }}"
 
  - name: GET Riak CS secret in Consul
-   uri: url=http://consul.service.consul:8500/v1/kv/riak-cs/AWS_SECRET
+   uri: url=http://consul-http.service.consul:8500/v1/kv/riak-cs/AWS_SECRET
         return_content=yes
    register: riak_cs_secret
 
@@ -33,7 +33,7 @@
      aws_secret_key={{ riak_cs_secret }}
 
  - name: set docker-reg environment vars in Consul
-   uri: url=http://consul.service.consul:8500/v1/kv/docker-reg/{{ item.key }}
+   uri: url=http://consul-http.service.consul:8500/v1/kv/docker-reg/{{ item.key }}
         method=PUT
         body="{{ item.value}}"
    with_dict:
@@ -46,7 +46,6 @@
      STORAGE_PATH: /registry
      GUNICORN_WORKERS: 1
      BOTO_DEBUG: 2
-     SERVICE_NAME: registry
 
  - name: pull docker registry image
    docker_pull: >
@@ -56,6 +55,11 @@
    template: >
      src=docker-reg.service
      dest=/usr/lib/systemd/system/docker-reg.service
+   register: docker_reg_unit
+
+ - name: systemctl daemon-reload
+   command: /bin/systemctl daemon-reload
+   when: docker_reg_unit.changed
 
  - name: enable and start docker-reg.service
    service: name=docker-reg
@@ -63,7 +67,6 @@
             state=started
 
  - name: template docker_registry_nginx.conf
-   sudo: yes
    template: src=docker_registry_nginx.conf
              dest=/var/docker_volumes/nginx/nginx/conf.d/docker_registry.conf
              mode=644

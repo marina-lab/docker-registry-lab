@@ -15,6 +15,12 @@ client_id: "{{ lookup('env','DIGITALOCEAN_CLIENT_ID') }}"
 docker_registry_server_name: my.docker.registry.com
 consul_ui_server_name: my.consul.ui.com
 
+# expected number of Consul servers in cluster
+expected_consul_servers: 1
+
+# number of Riak CS servers in cluster
+riak_cs_cluster_size: 1
+
 # ip address services will be bound to
 advertise_ip: "{{ ansible_eth0.ipv4.address }}"
 

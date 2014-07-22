@@ -1,0 +1,26 @@
+[Unit]
+Description=Nginx Service
+After=docker.service
+Requires=docker.service
+
+[Service]
+Restart=on-failure
+
+ExecStart=/bin/bash -c \
+    "/bin/docker start -a nginx \
+    || /bin/docker run \
+    --name nginx \
+    -e SERVICE_80_NAME=nginx \
+    -p {{ advertise_ip }}:80:80 \
+    -v /var/docker_volumes/nginx/nginx.conf:/etc/nginx.conf \
+    -v /var/docker_volumes/nginx/nginx:/etc/nginx \
+    {{ nginx_image }}"
+
+ExecStop=/bin/bash -c \
+    "/bin/docker stop nginx \
+    && /bin/docker rm nginx"
+
+ExecReload=/bin/docker kill -s HUP nginx
+
+[Install]
+WantedBy=multi-user.target
