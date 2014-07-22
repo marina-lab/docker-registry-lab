@@ -1,5 +1,9 @@
 # Docksul Docker-Consul bridge
 # Automatically registers containers with published ports as Consul services.
+ - name: pull Docksul image
+   docker_pull: >
+     repo={{ docksul_image }}
+
  - name: run Docksul container
    docker: image={{ docksul_image }}
            name="docksul"

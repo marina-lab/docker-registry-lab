@@ -26,6 +26,10 @@
      - /var/docker_volumes/consul/consul.d
      - /var/docker_volumes/consul/data
 
+ - name: pull consul container
+   docker_pull: >
+     repo={{ consul_image }}
+
  - name: run Consul container
    docker: >
      image={{ consul_image }}

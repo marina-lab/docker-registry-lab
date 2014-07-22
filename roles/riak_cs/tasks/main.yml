@@ -7,7 +7,10 @@
 # Riak HTTP API: 8098:8098
 # Riak CS HTTP API: 8080:8080
 #
-# TODO: Use tagged image from private registry.
+ - name: pull Riak CS image
+   docker_pull: >
+     repo={{ riak_cs_image }}
+
  - name: run Riak CS container
    docker: image={{ riak_cs_image }}
            ports="{{ advertise_ip }}:8098:8098,{{ advertise_ip }}:8080:8080"

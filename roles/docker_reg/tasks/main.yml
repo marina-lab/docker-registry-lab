@@ -48,10 +48,9 @@
      BOTO_DEBUG: 2
      SERVICE_NAME: registry
 
- - name: pull docker registry container
+ - name: pull docker registry image
    docker_pull: >
-     repo=sprin/docker-registry
-     tag=0.7.3.2
+     repo={{ docker_reg_image }}
 
  - name: template docker-reg.service
    template: >

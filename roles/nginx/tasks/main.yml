@@ -9,6 +9,10 @@
    notify:
      - reload nginx
 
+ - name: pull Nginx image
+   docker_pull: >
+     repo={{ nginx_image }}
+
  - name: run nginx container
    docker: image={{ nginx_image }}
            name="nginx"
