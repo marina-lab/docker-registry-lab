@@ -1,4 +1,5 @@
 /docker_registry_hosts
 /vars.json
+/images.json
 *.swp
 *.swo
