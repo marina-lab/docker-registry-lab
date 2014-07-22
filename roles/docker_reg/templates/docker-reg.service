@@ -1,0 +1,48 @@
+[Unit]
+Description=Docker Registry Service
+After=riak-cs.service
+Requires=riak-cs.service
+
+[Service]
+# Docker Registry will quit if it cannot connect to Riak CS, and
+# the Riak CS container takes time to actually start accepting connections.
+# Therefore, we expect that the Registry will need to restart several times
+# before making a successful connection to Riak CS, therefore a 5 second
+# wait between restarts.
+
+Restart=on-failure
+RestartSec=5
+
+# Use envconsul to create env-file with docker-reg env vars
+ExecStartPre=/bin/sh -c "/usr/bin/env -i \
+    /bin/envconsul -addr=consul.service.consul:8500 docker-reg \
+    /usr/bin/env > /tmp/docker-reg.env"
+
+# Add riak-cs keys to env-file
+ExecStartPre=/bin/sh -c "/usr/bin/env -i \
+    /bin/envconsul -addr=consul.service.consul:8500 riak-cs \
+    /usr/bin/env >> /tmp/docker-reg.env"
+
+# Start an existing container, or run a new one if one does not exist.
+ExecStart=/bin/bash -c \
+    "/bin/docker start -a docker-reg \
+    || /bin/docker run \
+    --name docker-reg \
+    --env-file /tmp/docker-reg.env \
+    -p {{ advertise_ip }}:5000:5000 \
+    -v /var/docker_volumes/registry:/registry \
+    {{ docker_reg_image }}"
+
+# Remove the running container!
+# This is the only way to reload env vars, and also where the magic
+# of stateless containers comes in.
+# Note that we try to let the container stop gracefully by using docker stop.
+#
+# XXX: Using ExecReload to do a stop and start seems to lead to race
+# conditions. Just do `systemctl restart docker-reg`
+ExecStop=/bin/bash -c \
+    "/bin/docker stop docker-reg \
+    && /bin/docker rm docker-reg"
+
+[Install]
+WantedBy=multi-user.target

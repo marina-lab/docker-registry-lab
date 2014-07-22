@@ -7,22 +7,6 @@
    pip: name=boto
         version=2.30.0
 
- - name: GET Riak CS key from Consul
-   uri: url=http://consul.service.consul:8500/v1/kv/riak-cs/AWS_KEY
-        return_content=yes
-   register: riak_cs_key
-
- - set_fact:
-     riak_cs_key: "{{ riak_cs_key.json[0].Value | b64decode }}"
-
- - name: GET Riak CS secret in Consul
-   uri: url=http://consul.service.consul:8500/v1/kv/riak-cs/AWS_SECRET
-        return_content=yes
-   register: riak_cs_secret
-
- - set_fact:
-     riak_cs_secret: "{{ riak_cs_secret.json[0].Value | b64decode }}"
-
  - name: create registry bucket
    # Use the "fakes3" scheme to force Riak CS-compatible connection.
    s3: bucket=registry
@@ -31,16 +15,27 @@
        aws_access_key={{ riak_cs_key }}
        aws_secret_key={{ riak_cs_secret }}
 
- - name: run docker registry container with Riak CS as backend using S3 api
-   docker: image={{ docker_reg_image }}
-           name="docker-reg"
-           ports={{ advertise_ip}}:5000:5000
-           env="SETTINGS_FLAVOR=s3,AWS_BUCKET=registry,AWS_SECRET={{ riak_cs_secret }},AWS_KEY={{ riak_cs_key }},AWS_SECURE=False,BOTO_HOST=riak-cs.service.consul,BOTO_PORT=8080,BOTO_CALLING_FORMAT=boto.s3.connection.OrdinaryCallingFormat,STORAGE_PATH=/registry,GUNICORN_WORKERS=1,BOTO_DEBUG=2,SERVICE_NAME=registry"
-           volumes="/var/docker_volumes/registry:/registry"
-           state=running
+ - name: set docker-reg environment vars in Consul
+   uri: url=http://consul.service.consul:8500/v1/kv/docker-reg/{{ item.key }}
+        method=PUT
+        body="{{ item.value}}"
+   with_dict:
+     SETTINGS_FLAVOR: s3
+     AWS_BUCKET: registry
+     AWS_SECURE: False
+     BOTO_HOST: riak-cs.service.consul
+     BOTO_PORT: 8080
+     BOTO_CALLING_FORMAT: boto.s3.connection.OrdinaryCallingFormat
+     STORAGE_PATH: /registry
+     GUNICORN_WORKERS: 1
+     BOTO_DEBUG: 2
+     SERVICE_NAME: registry
 
- - name: copy docker-reg.service
-   copy: >
+ - name: run pull docker registry container
+   debug: msg={{ docker_reg_image }}
+
+ - name: template docker-reg.service
+   template: >
      src=docker-reg.service
      dest=/usr/lib/systemd/system/docker-reg.service
 
