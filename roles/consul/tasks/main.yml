@@ -72,3 +72,13 @@
              mode=644
    notify:
      - reload nginx
+
+ # envconsul automatically sets environment vars from Consul.
+ # Used in unit files
+ # https://github.com/hashicorp/envconsul
+ - name: install envconsul
+   get_url: >
+     url=https://github.com/hashicorp/envconsul/releases/download/v0.2.0/envconsul_linux_amd64
+     dest=/bin/envconsul
+     mode=0700
+
