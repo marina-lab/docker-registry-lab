@@ -17,8 +17,9 @@
      api_key="{{ api_key }}"
      size_id=63 
      ssh_key_ids="{{ do_droplet.ssh_key.id }}"
-     region_id=3
+     region_id=4
      image_id=4856048
+     private_networking=yes
      wait_timeout=600
    register: do_droplet
  
