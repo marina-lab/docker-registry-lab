@@ -1,0 +1,50 @@
+---
+# First, create the droplet from the host.
+# This will create a "docker_registry_hosts" file in the current directory
+# to be referenced by the "provision_droplet" playbook.
+#
+# The reason for separating creation from provisioning into different
+# playbooks is that creation is not idempotent.
+- hosts: localhost
+  connection: local
+  serial: 1
+  gather_facts: no
+  vars_files:
+    - vars.yml
+  tasks:
+
+   - name: deploy public key
+     digital_ocean:
+       state: present
+       command: ssh
+       name: my_ssh_key
+       client_id: "{{ client_id }}"
+       api_key: "{{ api_key }}"
+       ssh_pub_key: "{{ my_pub_key }}"
+     register: do_droplet
+        
+   - name: create Bastion droplet 512MB/Centos 7/Region NYC2
+     digital_ocean:
+       state: present
+       command: droplet
+       name: "{{ droplet_name }}"
+       client_id: "{{ client_id }}"
+       api_key: "{{ api_key }}"
+       size_id: 66
+       ssh_key_ids: "{{ do_droplet.ssh_key.id }}"
+       region_id: 4
+       image_id: 4856048
+       private_networking: yes
+       wait_timeout: 600
+     register: do_droplet
+   
+   - debug:
+       msg: "ID is {{ do_droplet.droplet.id }}"
+   - debug:
+       msg: "IP is {{ do_droplet.droplet.ip_address }}"
+       
+   - name: "wait for {{ droplet_name }}'s sshd to come up"
+     wait_for:
+       host: "{{ do_droplet.droplet.ip_address }}"
+       port: 22
+       state: started
