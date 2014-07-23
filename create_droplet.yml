@@ -12,4 +12,46 @@
   vars_files:
     - vars.yml
   tasks:
-    - include: tasks/droplet.yml
+
+   - name: deploy public key
+     digital_ocean: >
+       state=present
+       command=ssh
+       name=my_ssh_key
+       client_id="{{ client_id }}"
+       api_key="{{ api_key }}"
+       ssh_pub_key="{{ my_pub_key }}"
+     register: do_droplet
+        
+   - name: create Digital Ocean droplet 1GB/Centos 7/Region SF1
+     digital_ocean: >   
+       state=present
+       command=droplet
+       name="{{ droplet_name }}"
+       client_id="{{ client_id }}"
+       api_key="{{ api_key }}"
+       size_id=63 
+       ssh_key_ids="{{ do_droplet.ssh_key.id }}"
+       region_id=4
+       image_id=4856048
+       private_networking=yes
+       wait_timeout=600
+     register: do_droplet
+   
+   - debug: msg="ID is {{ do_droplet.droplet.id }}"
+   - debug: msg="IP is {{ do_droplet.droplet.ip_address }}"
+       
+   - name: add new droplet to inventory
+     add_host: >
+       name="{{ do_droplet.droplet.ip_address }}"
+       groups=docker_registry_hosts
+
+   - name: create inventory file for later use
+     template: src=templates/docker_registry_hosts
+               dest=./docker_registry_hosts
+
+   - name: "wait for {{ droplet_name }}'s sshd to come up"
+     wait_for: >
+       host={{ do_droplet.droplet.ip_address }}
+       port=22
+       state=started
