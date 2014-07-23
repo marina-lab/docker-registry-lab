@@ -11,6 +11,8 @@
   gather_facts: no
   vars_files:
     - vars.yml
+  vars:
+    inventory_group: docker_registry_hosts
   tasks:
 
    - name: deploy public key
@@ -47,7 +49,7 @@
        groups=docker_registry_hosts
 
    - name: create inventory file for later use
-     template: src=templates/docker_registry_hosts
+     template: src=templates/inventory
                dest=./docker_registry_hosts
 
    - name: "wait for {{ droplet_name }}'s sshd to come up"

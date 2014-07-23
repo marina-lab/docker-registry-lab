@@ -11,6 +11,8 @@
   gather_facts: no
   vars_files:
     - vars.yml
+  vars:
+    inventory_group: bastion_hosts
   tasks:
 
    - name: deploy public key
@@ -42,6 +44,11 @@
        msg: "ID is {{ do_droplet.droplet.id }}"
    - debug:
        msg: "IP is {{ do_droplet.droplet.ip_address }}"
+
+   - name: create inventory file for later use
+     template: src=templates/inventory
+               dest=./bastion_hosts
+
        
    - name: "wait for {{ droplet_name }}'s sshd to come up"
      wait_for:

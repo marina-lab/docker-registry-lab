@@ -75,7 +75,7 @@ Create droplet
 
 .. code::
 
-   ansible-playbook -i localhost create_droplet.yml \
+   ansible-playbook -i localhost create_registry_droplet.yml \
        -e droplet_name=docker-registry
 
 Provision

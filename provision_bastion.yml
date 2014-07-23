@@ -1,0 +1,33 @@
+---
+# Provision bastion with common role.
+
+# Provision with admin_user, unless is_first_run is defined, then with root.
+# Reboot after first run.
+- hosts: bastion_hosts
+  user: "{{ admin_user if is_first_run is not defined else 'root' }}"
+  sudo: yes
+  vars_files:
+    - vars.yml
+  roles:
+    - common
+
+  tasks:
+    - name: flush handlers before reboot
+      meta: flush_handlers
+      when: is_first_run is defined
+
+    - name: reboot host
+      command: /bin/systemctl reboot --no-block
+      async: 0
+      poll: 0
+      ignore_errors: true
+      when: is_first_run is defined
+
+    - name: wait for host to come back
+      local_action: >
+        wait_for
+        host={{ inventory_hostname }}
+        port=22
+        state=started
+      sudo: false
+      when: is_first_run is defined
