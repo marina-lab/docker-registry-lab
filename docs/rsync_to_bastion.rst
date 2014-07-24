@@ -12,11 +12,12 @@ Rsync this repository to bastion
 ================================
 
 You don't want to have to commit to try your changes out from the bastion.
+There's a script included to sync your changes to the bastion using
+rsync and watchdog.
 
 .. code::
 
-   rsync -avz \
-       -e "ssh" \
-       --quiet \
-       ../docker-registry-lab \
-       107.170.5.28:~/docker-registry-lab
+   pip install watchdog
+
+   BASTION_DEST="bastion.example.com:~/docker-registry-lab"
+   ./sync-bastion.sh $BASTION_DEST
