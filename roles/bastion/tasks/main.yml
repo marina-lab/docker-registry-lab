@@ -1,0 +1,22 @@
+ - name: template access credentials into .rc file
+   template:
+     src: credentials.rc
+     dest: /home/{{ admin_user }}/.credentialsrc
+
+ - name: source credentals in bashrc
+   lineinfile:
+     dest: "/home/{{ admin_user }}/.bashrc"
+     line: source ~/.credentialsrc
+
+ - name: extract generated public key from bastion
+   shell: cat /home/{{ admin_user }}/.ssh/id_rsa.pub
+   register: bastion_pub_key
+
+ - name: deploy bastion public key to DO
+   digital_ocean:
+     state: present
+     command: ssh
+     name: bastion_key
+     client_id: "{{ creds.DIGITALOCEAN_CLIENT_ID }}"
+     api_key: "{{ creds.DIGITALOCEAN_API_KEY }}"
+     ssh_pub_key: "{{ bastion_pub_key.stdout }}"

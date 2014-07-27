@@ -1,17 +1,17 @@
-- name: Ensure sudoers.d is enabled
+- name: ensure sudoers.d is enabled
   lineinfile: >
     dest=/etc/sudoers
     regexp='^#includedir /etc/sudoers.d'
     line='#includedir /etc/sudoers.d'
     state=present backup=yes
 
-- name: Set up password-less sudo for admin users
+- name: set up password-less sudo for admin users
   copy: >
     content='%{{ sudo_group }} ALL=(ALL) NOPASSWD:ALL'
     dest=/etc/sudoers.d/admin
     owner=root group=root mode=0440
 
-- name: Strict SSH access
+- name: strict SSH access
   lineinfile: >
     dest=/etc/ssh/sshd_config
     state=present
@@ -27,3 +27,8 @@
     - { key: 'MaxSessions',            value: "5"}
     - { key: 'MaxStartups',            value: "10:30:60"}
   notify: restart sshd
+
+- name: enable firewalld
+  service: name=firewalld
+           enabled=yes
+           state=started

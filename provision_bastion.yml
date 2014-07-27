@@ -10,6 +10,8 @@
     - vars.yml
   roles:
     - common
+    - ansible
+    - bastion
 
   tasks:
     - name: flush handlers before reboot

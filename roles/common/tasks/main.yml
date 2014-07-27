@@ -3,6 +3,7 @@
  - include: security.yml
  - include: epel.yml
  - include: python-pip.yml
+ - include: rsync.yml
 
  # disabled for testing, slow.
  #- name: upgrade all packages
