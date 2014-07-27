@@ -7,9 +7,10 @@ my_pub_key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
 ssh_group: sshusers
 sudo_group: sudousers
 
-# digital ocean credentials 
-api_key: "{{ lookup('env','DIGITALOCEAN_API_KEY') }}"
-client_id: "{{ lookup('env','DIGITALOCEAN_CLIENT_ID') }}"
+# All credentials which will be templated into .rc file on bastion.
+creds:
+  DIGITALOCEAN_API_KEY: "{{ lookup('env','DIGITALOCEAN_API_KEY') }}"
+  DIGITALOCEAN_CLIENT_ID: "{{ lookup('env','DIGITALOCEAN_CLIENT_ID') }}"
 
 # nginx server_name of Docker Registry service.
 docker_registry_server_name: my.docker.registry.com
@@ -21,8 +22,11 @@ expected_consul_servers: 1
 # number of Riak CS servers in cluster
 riak_cs_cluster_size: 1
 
-# ip address services will be bound to
-advertise_ip: "{{ ansible_eth0.ipv4.address }}"
+# ip address public services will be bound to
+public_ip: "{{ ansible_eth0.ipv4.address }}"
+
+# ip address private services will be bound to
+private_ip: "{{ ansible_eth1.ipv4.address }}"
 
 # docker bridge ip
 docker_bip: 172.17.42.1
@@ -34,3 +38,7 @@ docksul_image: progrium/docksul
 riak_cs_image: hectcastro/riak-cs
 nginx_image: nginx:1.7.1
 docker_reg_image: sprin/docker-registry:0.7.3.2
+
+# bastion config
+ansible_repo: https://github.com/ansible/ansible.git
+

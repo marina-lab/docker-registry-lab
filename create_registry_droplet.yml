@@ -16,28 +16,28 @@
   tasks:
 
    - name: deploy public key
-     digital_ocean: >
-       state=present
-       command=ssh
-       name=my_ssh_key
-       client_id="{{ client_id }}"
-       api_key="{{ api_key }}"
-       ssh_pub_key="{{ my_pub_key }}"
+     digital_ocean:
+       state: present
+       command: ssh
+       name: my_ssh_key
+       client_id: "{{ creds.DIGITALOCEAN_CLIENT_ID }}"
+       api_key: "{{ creds.DIGITALOCEAN_API_KEY }}"
+       ssh_pub_key: "{{ my_pub_key }}"
      register: do_droplet
         
    - name: create Digital Ocean droplet 1GB/Centos 7/Region SF1
-     digital_ocean: >   
-       state=present
-       command=droplet
-       name="{{ droplet_name }}"
-       client_id="{{ client_id }}"
-       api_key="{{ api_key }}"
-       size_id=63 
-       ssh_key_ids="{{ do_droplet.ssh_key.id }}"
-       region_id=4
-       image_id=4856048
-       private_networking=yes
-       wait_timeout=600
+     digital_ocean:
+       state: present
+       command: droplet
+       name: "{{ droplet_name }}"
+       client_id: "{{ creds.DIGITALOCEAN_CLIENT_ID }}"
+       api_key: "{{ creds.DIGITALOCEAN_API_KEY }}"
+       size_id: 63 
+       ssh_key_ids: "{{ do_droplet.ssh_key.id }}"
+       region_id: 4
+       image_id: 4856048
+       private_networking: yes
+       wait_timeout: 600
      register: do_droplet
    
    - debug: msg="ID is {{ do_droplet.droplet.id }}"
