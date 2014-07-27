@@ -1,0 +1,24 @@
+ - name: install ansible deps with yum
+   yum: name={{ item }}
+        state=installed
+   with_items:
+    - git
+    - gcc
+    - python-devel
+
+ - name: clone {{ ansible_repo }}
+   git:
+     repo: "{{ ansible_repo }}"
+     dest: "/home/{{ admin_user }}/ansible"
+
+ - name: install ansible deps with pip
+   pip: name={{ item }}
+   with_items:
+    - paramiko
+    - PyYAML
+    - jinja2
+
+ - name: put ansible on path in bashrc
+   lineinfile:
+     dest: "/home/{{ admin_user }}/.bashrc"
+     line: source ~/ansible/hacking/env-setup > /dev/null
