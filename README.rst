@@ -21,22 +21,6 @@ How to use
 Use the Forks, Luke
 -------------------
 
-Mainline Ansible does not have support for tagged Docker images yet, so you
-will need to run a fork that includes the PR in #7739, such as sprin/ansible:
-
-.. code::
-
-   git clone https://github.com/sprin/ansible
-   cd ./ansible
-   source ./hacking/env-setup
-   sudo pip install paramiko PyYAML jinja2 httplib2 dopy
-
-You may need the following system libraries:
-
-.. code::
-
-    sudo yum install gcc python-devel
-
 Note that this also uses a fork of dotcloud/docker-registry, in order to
 enable connection to a Riak CS backend (#461). The fork is at
 sprin/docker-registry, and the image used by this playbook is in the public
@@ -46,7 +30,7 @@ Environment variables and other assumptions
 -------------------------------------------
 
 All assumptions about the control machine and the desired target configuration
-that can be changed are in vars.yml.
+that can be changed, such as hostnames and domains, are in vars.yml.
 
 On the control machine, the `USER` environment variable will be used as the
 default admin user. The ssh public key to be used with DO and deployed to the
@@ -60,9 +44,9 @@ following environment variables are needed to authenticate with Digital Ocean:
    DIGITALOCEAN_API_KEY
    DIGITALOCEAN_CLIENT_ID
 
-All of these are overridable with `-e` options to `ansible-playbook`.
-For convenience, you may want to create a vars.json file and load it with
-`-e "@vars.json"`.
+**All vars in vars.yml of these are overridable** with `-e` options to
+`ansible-playbook`.  For convenience, you may want to create a vars.json file
+and load it with `-e "@vars.json"`.
 
 Deploy
 ------
@@ -75,8 +59,7 @@ Create droplet
 
 .. code::
 
-   ansible-playbook -i localhost create_registry_droplet.yml \
-       -e droplet_name=docker-registry
+   ansible-playbook -i localhost create_registry_droplet.yml
 
 Provision
 .........

@@ -1,4 +1,3 @@
-droplet_name: docker-registry
 admin_user: "{{ lookup('env','USER') }}"
 admin_htpasswd: "{{ lookup('password',
   '~/credentials/docker-registry/admin_htpasswd') }}"
@@ -12,7 +11,7 @@ creds:
   DIGITALOCEAN_API_KEY: "{{ lookup('env','DIGITALOCEAN_API_KEY') }}"
   DIGITALOCEAN_CLIENT_ID: "{{ lookup('env','DIGITALOCEAN_CLIENT_ID') }}"
 
-# nginx server_name of Docker Registry service.
+# nginx `server_name`s of service.
 docker_registry_server_name: my.docker.registry.com
 consul_ui_server_name: my.consul.ui.com
 
@@ -39,6 +38,10 @@ riak_cs_image: hectcastro/riak-cs
 nginx_image: nginx:1.7.1
 docker_reg_image: sprin/docker-registry:0.7.3.2
 
+# Optional registry droplet config
+registry_droplet_name: docker-registry
+
 # bastion config
 ansible_repo: https://github.com/ansible/ansible.git
+bastion_droplet_name: bastion
 
