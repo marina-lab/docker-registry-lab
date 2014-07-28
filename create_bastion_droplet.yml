@@ -19,21 +19,21 @@
      digital_ocean:
        state: present
        command: ssh
-       name: my_ssh_key
+       name: "{{ do_ssh_key_name }}"
        client_id: "{{ creds.DIGITALOCEAN_CLIENT_ID }}"
        api_key: "{{ creds.DIGITALOCEAN_API_KEY }}"
-       ssh_pub_key: "{{ my_pub_key }}"
-     register: do_droplet
+       ssh_pub_key: "{{ do_ssh_pub_key }}"
+     register: do_key
         
    - name: create Bastion droplet 512MB/Centos 7/Region NYC2
      digital_ocean:
        state: present
        command: droplet
-       name: "{{ droplet_name }}"
+       name: "{{ bastion_droplet_name }}"
        client_id: "{{ creds.DIGITALOCEAN_CLIENT_ID }}"
        api_key: "{{ creds.DIGITALOCEAN_API_KEY }}"
        size_id: 66
-       ssh_key_ids: "{{ do_droplet.ssh_key.id }}"
+       ssh_key_ids: "{{ do_key.ssh_key.id }}"
        region_id: 4
        image_id: 4856048
        private_networking: yes
@@ -49,7 +49,7 @@
      template: src=templates/inventory
                dest=./bastion_hosts
 
-   - name: "wait for {{ droplet_name }}'s sshd to come up"
+   - name: "wait for {{ bastion_droplet_name }}'s sshd to come up"
      wait_for:
        host: "{{ do_droplet.droplet.ip_address }}"
        port: 22

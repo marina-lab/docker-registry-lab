@@ -1,7 +1,6 @@
 admin_user: "{{ lookup('env','USER') }}"
 admin_htpasswd: "{{ lookup('password',
   '~/credentials/docker-registry/admin_htpasswd') }}"
-my_pub_key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
 
 ssh_group: sshusers
 sudo_group: sudousers
@@ -39,6 +38,9 @@ nginx_image: nginx:1.7.1
 docker_reg_image: sprin/docker-registry:0.7.3.2
 
 # Optional registry droplet config
+do_ssh_pub_key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+do_ssh_key_name: "{{ lookup('env','DO_SSH_KEY_NAME') }}"
+addl_do_key_ids:
 registry_droplet_name: docker-registry
 
 # bastion config
