@@ -17,6 +17,14 @@
      dest: "/home/{{ admin_user }}/.credentialsrc"
      line: "export DO_SSH_KEY_NAME={{ admin_user }}.bastion"
 
+ - name: wipe out old bastion public key on DO
+   digital_ocean:
+     state: absent
+     command: ssh
+     name: "{{ admin_user }}.bastion"
+     client_id: "{{ creds.DIGITALOCEAN_CLIENT_ID }}"
+     api_key: "{{ creds.DIGITALOCEAN_API_KEY }}"
+
  - name: deploy bastion public key to DO
    digital_ocean:
      state: present
