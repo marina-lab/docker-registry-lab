@@ -12,11 +12,16 @@
    shell: cat /home/{{ admin_user }}/.ssh/id_rsa.pub
    register: bastion_pub_key
 
+ - name: add ssh key name to credentials
+   lineinfile:
+     dest: "/home/{{ admin_user }}/.credentialsrc"
+     line: "export DO_SSH_KEY_NAME={{ admin_user }}.bastion"
+
  - name: deploy bastion public key to DO
    digital_ocean:
      state: present
      command: ssh
-     name: bastion_key
+     name: "{{ admin_user }}.bastion"
      client_id: "{{ creds.DIGITALOCEAN_CLIENT_ID }}"
      api_key: "{{ creds.DIGITALOCEAN_API_KEY }}"
      ssh_pub_key: "{{ bastion_pub_key.stdout }}"

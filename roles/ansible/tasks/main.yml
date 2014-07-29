@@ -1,6 +1,7 @@
  - name: install ansible deps with yum
-   yum: name={{ item }}
-        state=installed
+   yum:
+     name: "{{ item }}"
+     state: installed
    with_items:
     - git
     - gcc
@@ -10,6 +11,7 @@
    git:
      repo: "{{ ansible_repo }}"
      dest: "/home/{{ admin_user }}/ansible"
+   remote_user: "{{ admin_user }}"
 
  - name: install ansible deps with pip
    pip: name={{ item }}
@@ -17,6 +19,7 @@
     - paramiko
     - PyYAML
     - jinja2
+    - dopy
 
  - name: put ansible on path in bashrc
    lineinfile:
