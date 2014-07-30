@@ -1,3 +1,0 @@
- - name: install rsync with yum
-   yum: name=rsync
-        state=installed

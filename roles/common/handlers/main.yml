@@ -1,6 +1,0 @@
-- name: restart sshd
-  service: name=sshd state=restarted
-  ignore_errors: true
-
-- name: reload firewalld
-  command: /bin/firewall-cmd --reload

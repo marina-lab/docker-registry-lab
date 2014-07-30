@@ -1,23 +1,27 @@
 - name: Create user groups
-  group: name="{{ item }}" state=present
+  group:
+    name: "{{ item }}"
+    state: present
   with_items:
     - "{{ sudo_group }}"
     - "{{ ssh_group }}"
 
 - name: Disable root password login
-  user: >
-    name=root
-    groups="{{ ssh_group }}"
-    password='!'
+  user:
+    name: root
+    groups: "{{ ssh_group }}"
+    password: '!'
            
 - name: Create admin user
-  user: >
-    name="{{ admin_user }}"
-    comment="Administrator account"
-    state=present
-    groups="{{ sudo_group }},{{ ssh_group }}"
-    append=yes
-    generate_ssh_key=yes
+  user:
+    name: "{{ admin_user }}"
+    comment: "Administrator account"
+    state: present
+    groups: "{{ sudo_group }},{{ ssh_group }}"
+    append: yes
+    generate_ssh_key: yes
 
 - name: Deploy ssh public key 
-  authorized_key: user="{{ admin_user }}" key="{{ my_pub_key }}"
+  authorized_key:
+    user: "{{ admin_user }}"
+    key: "{{ do_ssh_pub_key }}"
