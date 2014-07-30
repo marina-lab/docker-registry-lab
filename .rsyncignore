@@ -2,3 +2,5 @@
 *.pyc
 *.swp
 *.swo
+docker_registry_hosts
+bastion_hosts
