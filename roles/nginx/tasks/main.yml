@@ -1,22 +1,24 @@
  - name: create volume on host for nginx
-   file: path=/var/docker_volumes/nginx/nginx/conf.d
-         state=directory
+   file:
+     path: /var/docker_volumes/nginx/nginx/conf.d
+     state: directory
 
  - name: template nginx.conf
-   template: src=nginx.conf
-             dest=/var/docker_volumes/nginx/nginx.conf
-             mode=644
+   template:
+     src: nginx.conf
+     dest: /var/docker_volumes/nginx/nginx/nginx.conf
+     mode: 644
    notify:
      - reload nginx
 
- - name: pull Nginx image
-   docker_pull: >
-     repo={{ nginx_image }}
+ - name: pull nginx image
+   docker_pull:
+     repo: "{{ nginx_image }}"
 
  - name: copy nginx.service
-   template: >
-     src=nginx.service
-     dest=/usr/lib/systemd/system/nginx.service
+   template:
+     src: nginx.service
+     dest: /usr/lib/systemd/system/nginx.service
    register: nginx_unit
 
  - name: systemctl daemon-reload
@@ -24,6 +26,7 @@
    when: nginx_unit.changed
 
  - name: enable and start nginx.service
-   service: name=nginx
-            enabled=yes
-            state=started
+   service:
+     name: nginx
+     enabled: yes
+     state: started

@@ -26,15 +26,11 @@ public_ip: "{{ ansible_eth0.ipv4.address }}"
 # ip address private services will be bound to
 private_ip: "{{ ansible_eth1.ipv4.address }}"
 
-# docker bridge ip
-docker_bip: 172.17.42.1
-docker_bip_cidr: "{{ docker_bip }}/16"
-      
 # images
 consul_image: progrium/consul
-docksul_image: progrium/docksul
+registrator_image: progrium/registrator
 riak_cs_image: hectcastro/riak-cs
-nginx_image: nginx:1.7.1
+nginx_image: mwcampbell/nginx
 docker_reg_image: sprin/docker-registry:0.7.3.2
 
 # Optional registry droplet config

@@ -1,2 +1,8 @@
+ - name: restart nginx
+   service:
+     name: nginx
+     state: restarted
+
+ # Reload nginx with kill -s HUP
  - name: reload nginx
-   service: name=nginx state=restarted
+   command: /bin/systemctl reload nginx

@@ -4,16 +4,17 @@ After=docker.service
 Requires=docker.service
 
 [Service]
-Restart=on-failure
+#Restart=on-failure
+#RestartSec=5
 
 ExecStart=/bin/bash -c \
     "/bin/docker start -a nginx \
     || /bin/docker run \
     --name nginx \
     -e SERVICE_80_NAME=nginx \
-    -p {{ advertise_ip }}:80:80 \
-    -v /var/docker_volumes/nginx/nginx.conf:/etc/nginx.conf \
-    -v /var/docker_volumes/nginx/nginx:/etc/nginx \
+    -p {{ public_ip }}:80:80 \
+    -v /var/docker_volumes/nginx/nginx/conf.d:/etc/nginx/conf.d \
+    -v /var/docker_volumes/nginx/nginx/nginx.conf:/etc/nginx/nginx.conf \
     {{ nginx_image }}"
 
 ExecStop=/bin/bash -c \
