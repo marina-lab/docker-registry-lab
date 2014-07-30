@@ -1,23 +1,24 @@
 [Unit]
-Description=Docksul Service
+Description=Registrator Service
 After=consul.service
 Requires=consul.service
 
 [Service]
-Restart=on-failure
+#Restart=on-failure
+#RestartSec=5
 
 ExecStart=/bin/bash -c \
-    "/bin/docker start -a docksul \
+    "/bin/docker start -a registrator \
     || /bin/docker run \
-    --name docksul \
+    --name registrator \
     -v /var/run/docker.sock:/tmp/docker.sock \
     -e DOCKER_HOST=unix:///tmp/docker.sock \
-    {{ docksul_image }} \
-    {{advertise_ip }}:8500"
+    {{ registrator_image }} \
+    consul://{{ private_ip }}:8500"
 
 ExecStop=/bin/bash -c \
-    "/bin/docker stop docksul \
-    && /bin/docker rm docksul"
+    "/bin/docker stop registrator \
+    && /bin/docker rm registrator"
 
 [Install]
 WantedBy=multi-user.target
