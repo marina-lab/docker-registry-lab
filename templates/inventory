@@ -1,2 +1,2 @@
-[docker_registry_hosts]
+[{{ inventory_group }}]
 {{ do_droplet.droplet.ip_address }}

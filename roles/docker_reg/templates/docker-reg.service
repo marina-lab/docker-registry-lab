@@ -30,7 +30,7 @@ ExecStart=/bin/bash -c \
     --name docker-reg \
     --env-file /tmp/docker-reg.env \
     -e SERVICE_NAME=registry \
-    -p {{ advertise_ip }}:5000:5000 \
+    -p {{ private_ip }}:5000:5000 \
     -v /var/docker_volumes/registry:/registry \
     {{ docker_reg_image }}"
 

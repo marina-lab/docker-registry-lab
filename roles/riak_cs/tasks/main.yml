@@ -7,20 +7,21 @@
 # Riak HTTP API: 8098:8098
 # Riak CS HTTP API: 8080:8080
  - name: set riak-cs environment vars in Consul
-   uri: url=http://consul-http.service.consul:8500/v1/kv/docker-reg/{{ item.key }}
-        method=PUT
-        body="{{ item.value}}"
+   uri:
+     url: "http://consul-http.service.consul:8500/v1/kv/riak-cs/{{ item.key }}"
+     method: PUT
+     body: "{{ item.value}}"
    with_dict:
      DOCKER_RIAK_CS_CLUSTER_SIZE: "{{ riak_cs_cluster_size }}"
 
  - name: pull Riak CS image
-   docker_pull: >
-     repo={{ riak_cs_image }}
+   docker_pull:
+     repo: "{{ riak_cs_image }}"
 
  - name: template riak-cs.service
-   template: >
-     src=riak-cs.service
-     dest=/usr/lib/systemd/system/riak-cs.service
+   template:
+     src: riak-cs.service
+     dest: /usr/lib/systemd/system/riak-cs.service
    register: riak_cs_unit
 
  - name: systemctl daemon-reload
@@ -28,16 +29,25 @@
    when: riak_cs_unit.changed
 
  - name: enable and start riak-cs.service
-   service: name=riak-cs
-            enabled=yes
-            state=started
+   service:
+     name: riak-cs
+     enabled: yes
+     state: started
+
+ - name: attempt to enter riak cs container
+ # Because this key is generated shortly after the first time the service
+ # is initialized, we need to retry until it is generated.
+   shell: >
+     /usr/local/bin/docker-enter riak-cs echo success
+   register: riak_cs_key
+   until: riak_cs_key.stdout.find("success") != -1
+   retries: 10
 
  - name: extract Riak CS key
  # Because this key is generated shortly after the first time the service
  # is initialized, we need to retry until it is generated.
    shell: >
-     /usr/local/bin/docker-enter riak-cs
-     egrep "admin_key" /etc/riak-cs/app.config | cut -d '"' -f2
+     /usr/local/bin/docker-enter riak-cs egrep "admin_key" /etc/riak-cs/app.config | cut -d '"' -f2
    register: riak_cs_key
    until: riak_cs_key.stdout.find("admin-key") == -1
    retries: 10
@@ -45,17 +55,18 @@
 
  - name: extract Riak CS secret
    shell: >
-     /usr/local/bin/docker-enter riak-cs
-     egrep "admin_secret" /etc/riak-cs/app.config | cut -d'"' -f2
+     /usr/local/bin/docker-enter riak-cs egrep "admin_secret" /etc/riak-cs/app.config | cut -d'"' -f2
    register: riak_cs_secret
    changed_when: False
 
  - name: set Riak CS key in Consul
-   uri: url=http://consul-http.service.consul:8500/v1/kv/riak-cs/AWS_KEY
-        method=PUT
-        body="{{ riak_cs_key.stdout }}"
+   uri:
+     url: http://consul-http.service.consul:8500/v1/kv/riak-cs/AWS_KEY
+     method: PUT
+     body: "{{ riak_cs_key.stdout }}"
 
  - name: set Riak CS secret in Consul
-   uri: url=http://consul-http.service.consul:8500/v1/kv/riak-cs/AWS_SECRET
-        method=PUT
-        body="{{ riak_cs_secret.stdout }}"
+   uri:
+     url: http://consul-http.service.consul:8500/v1/kv/riak-cs/AWS_SECRET
+     method: PUT
+     body: "{{ riak_cs_secret.stdout }}"

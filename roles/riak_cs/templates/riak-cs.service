@@ -5,11 +5,12 @@ Requires=docksul.service
 
 [Service]
 Restart=on-failure
+RestartSec=5
 
 # Use envconsul to create env-file with riak-cs env vars
 ExecStartPre=/bin/sh -c "/usr/bin/env -i \
     /bin/envconsul -addr=consul-http.service.consul:8500 riak-cs \
-    /usr/bin/env >> /tmp/riak-cs.env"
+    /usr/bin/env > /tmp/riak-cs.env"
 
 ExecStart=/bin/bash -c \
     "/bin/docker start -a riak-cs \
@@ -17,7 +18,7 @@ ExecStart=/bin/bash -c \
     --name riak-cs \
     --env-file /tmp/riak-cs.env \
     -e SERVICE_8080_NAME=riak-cs \
-    -p {{ advertise_ip }}:8080:8080 \
+    -p {{ private_ip }}:8080:8080 \
     -e DOCKER_HOST=unix:///tmp/docker.sock \
     {{ riak_cs_image }}"
 

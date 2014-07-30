@@ -1,23 +1,27 @@
 ---
  - name: create data directory for registry
-   file: path=/var/docker_volumes/registry
-         state=directory
+   file:
+     path: /var/docker_volumes/registry
+     state: directory
 
  - name: install boto (s3 client)
-   pip: name=boto
-        version=2.30.0
+   pip:
+     name: boto
+     version: 2.30.0
 
  - name: GET Riak CS key from Consul
-   uri: url=http://consul-http.service.consul:8500/v1/kv/riak-cs/AWS_KEY
-        return_content=yes
+   uri:
+     url: http://consul-http.service.consul:8500/v1/kv/riak-cs/AWS_KEY
+     return_content: yes
    register: riak_cs_key
 
  - set_fact:
      riak_cs_key: "{{ riak_cs_key.json[0].Value | b64decode }}"
 
  - name: GET Riak CS secret in Consul
-   uri: url=http://consul-http.service.consul:8500/v1/kv/riak-cs/AWS_SECRET
-        return_content=yes
+   uri:
+     url: http://consul-http.service.consul:8500/v1/kv/riak-cs/AWS_SECRET
+     return_content: yes
    register: riak_cs_secret
 
  - set_fact:
@@ -25,17 +29,18 @@
 
  - name: create registry bucket
    # Use the "fakes3" scheme to force Riak CS-compatible connection.
-   s3: >
-     bucket=registry
-     mode=create
-     s3_url="fakes3://riak-cs.service.consul:8080"
-     aws_access_key={{ riak_cs_key }}
-     aws_secret_key={{ riak_cs_secret }}
+   s3:
+     bucket: registry
+     mode: create
+     s3_url: "fakes3://riak-cs.service.consul:8080"
+     aws_access_key: "{{ riak_cs_key }}"
+     aws_secret_key: "{{ riak_cs_secret }}"
 
  - name: set docker-reg environment vars in Consul
-   uri: url=http://consul-http.service.consul:8500/v1/kv/docker-reg/{{ item.key }}
-        method=PUT
-        body="{{ item.value}}"
+   uri:
+     url: "http://consul-http.service.consul:8500/v1/kv/docker-reg/{{ item.key }}"
+     method: PUT
+     body: "{{ item.value}}"
    with_dict:
      SETTINGS_FLAVOR: s3
      AWS_BUCKET: registry
@@ -48,13 +53,13 @@
      BOTO_DEBUG: 2
 
  - name: pull docker registry image
-   docker_pull: >
-     repo={{ docker_reg_image }}
+   docker_pull:
+     repo: "{{ docker_reg_image }}"
 
  - name: template docker-reg.service
-   template: >
-     src=docker-reg.service
-     dest=/usr/lib/systemd/system/docker-reg.service
+   template:
+     src: docker-reg.service
+     dest: /usr/lib/systemd/system/docker-reg.service
    register: docker_reg_unit
 
  - name: systemctl daemon-reload
@@ -62,13 +67,15 @@
    when: docker_reg_unit.changed
 
  - name: enable and start docker-reg.service
-   service: name=docker-reg
-            enabled=yes
-            state=started
+   service:
+     name: docker-reg
+     enabled: yes
+     state: started
 
  - name: template docker_registry_nginx.conf
-   template: src=docker_registry_nginx.conf
-             dest=/var/docker_volumes/nginx/nginx/conf.d/docker_registry.conf
-             mode=644
+   template:
+     src: docker_registry_nginx.conf
+     dest: /var/docker_volumes/nginx/nginx/conf.d/docker_registry.conf
+     mode: 644
    notify:
      - reload nginx
