@@ -7,7 +7,16 @@ Requires=docker.socket
 [Service]
 Type=notify
 EnvironmentFile=-/etc/sysconfig/docker
-ExecStart=/usr/bin/docker -d --bip "{{ docker_bip_cidr }}" --dns {{ docker_bip }} --dns 8.8.8.8 --dns-search service.consul --selinux-enabled -H fd://
+
+# Add iptables rules to accept packets from the private interface and docker0
+# TODO: Add rule for private interface on system startup instead?
+ExecStartPre=/sbin/iptables -I INPUT -i {{ private_if }} -j ACCEPT
+ExecStop=/sbin/iptables -D INPUT -i {{ private_if }} -j ACCEPT
+
+ExecStartPre=/sbin/iptables -I INPUT -i docker0 -j ACCEPT
+ExecStop=/sbin/iptables -D INPUT -i docker0 -j ACCEPT
+
+ExecStart=/usr/bin/docker -d --dns {{ private_ip }} --dns 8.8.8.8 --dns-search service.consul --selinux-enabled -H fd://
 Restart=on-failure
 LimitNOFILE=1048576
 LimitNPROC=1048576

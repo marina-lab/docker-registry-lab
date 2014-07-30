@@ -4,7 +4,8 @@
         state=present
 
  - name: check Docker version
-   shell: docker version | grep "Server version" | cut -d" " -f3
+   shell: >
+     docker version | grep 'Server version' | awk '{print $3}'
    register: docker_version
    changed_when: False
 
@@ -12,14 +13,14 @@
    # Note that the initial yum install is required to perform cgroups config
    file: path=/bin/docker
          state=absent
-   when: docker_version.stdout != '1.1.0'
+   when: docker_version.stdout != '1.1.2'
 
- - name: install Docker 1.1.0 unless already installed
+ - name: install Docker 1.1.2 unless already installed
    # Note that the initial yum install is required to perform cgroups config
-   get_url: url=https://get.docker.io/builds/Linux/x86_64/docker-1.1.0
+   get_url: url=https://get.docker.io/builds/Linux/x86_64/docker-1.1.2
             dest=/bin/docker
             mode=0700
-   when: docker_version.stdout != '1.1.0'
+   when: docker_version.stdout != '1.1.2'
 
  - name: template docker.service
    # Also sets Docker args to enable Consul to act as DNS
