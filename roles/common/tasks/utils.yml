@@ -1,0 +1,10 @@
+ - name: install rsync, dig, nmap, lsof, netstat with yum
+   yum:
+     name: "{{ item }}"
+     state: installed
+   with_items:
+     - rsync
+     - bind-utils
+     - nmap
+     - lsof
+     - net-tools
