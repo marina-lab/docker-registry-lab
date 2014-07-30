@@ -5,78 +5,87 @@
 # We bind port 53 of the container to port 53 of the docker0 bridge adapter,
 # enabling Consul to serve as the DNS for containers.
 #
-# All other ports are bound to the "advertise_ip". If this is a publicly
-# exposed IP, you need to whitelist your other hosts with firewall rules
-# and encrypt your traffic!
+# All other ports are bound to the "private_ip".
 #
 # Requires the docker daemon to be run with:
-# --dns {{ docker_bip }} --dns 8.8.8.8 --dns-search service.consul
+# --dns {{ private_ip }} --dns 8.8.8.8 --dns-search service.consul
 #
-# Port bindings:
-# DNS server: {{ docker_bip }}:53:53
+# Port bindings, to private network interface:
+# DNS server: 53:53
 # HTTP API: 8500:8500
-# RPC endpoint: 8400:8400
+# RPC endpoint (client forwarding): 8400:8400
 # Serf LAN port: 8301:8301
-# Serf WAN port: 8302:8302
 # Server RPC address: 8300:8300
  - name: create data directory for consul
-   file: path={{ item }}
-         state=directory
+   file:
+     path: "{{ item }}"
+     state: directory
    with_items:
      - /var/docker_volumes/consul/consul.d
      - /var/docker_volumes/consul/data
 
  - name: pull Consul image
-   docker_pull: >
-     repo={{ consul_image }}
+   docker_pull:
+     repo: "{{ consul_image }}"
 
  - name: template consul.service
-   template: >
-     src=consul.service
-     dest=/usr/lib/systemd/system/consul.service
+   template:
+     src: consul.service
+     dest: /usr/lib/systemd/system/consul.service
    register: consul_unit
+   notify: restart consul
 
  - name: systemctl daemon-reload
    command: /bin/systemctl daemon-reload
    when: consul_unit.changed
 
  - name: enable and start consul.service
-   service: name=consul
-            enabled=yes
-            state=started
+   service:
+     name: consul
+     enabled: yes
+     state: started
 
  - name: use consul as local dns resolver
-   lineinfile: >
-     dest=/etc/sysconfig/network-scripts/ifcfg-eth0
-     regexp=^DNS1=
-     line=DNS1={{ docker_bip }}
-   register: result
+   lineinfile:
+     dest: /etc/sysconfig/network-scripts/ifcfg-eth0
+     regexp: ^DNS1=
+     line: DNS1={{ private_ip }}
+   register: dns1
+
+ - name: use 8.8.8.8 as DNS2, 8.8.4.4 as DNS3
+   lineinfile:
+     dest: /etc/sysconfig/network-scripts/ifcfg-eth0
+     line: "{{ item }}"
+   with_items:
+     - DNS2=8.8.8.8
+     - DNS3=8.8.4.4
+   register: dns2
 
  - name: restart NetworkManager
-   service: name=NetworkManager state=restarted
-   when: result.changed
+   service:
+     name: NetworkManager
+     state: restarted
+   when: dns1.changed or dns2.changed
 
  - name: create htpasswd for consul
-   htpasswd: >
-     path=/var/docker_volumes/nginx/nginx/conf.d/consul_ui.htpasswd
-     name={{ admin_user }}
-     password={{ admin_htpasswd }}
-     mode=0640
+   htpasswd:
+     path: /var/docker_volumes/nginx/nginx/conf.d/consul_ui.htpasswd
+     name: "{{ admin_user }}"
+     password: "{{ admin_htpasswd }}"
+     mode: 0640
 
  - name: template consul_ui_nginx.conf
-   sudo: yes
-   template: src=consul_ui_nginx.conf
-             dest=/var/docker_volumes/nginx/nginx/conf.d/consul_ui.conf
-             mode=644
-   notify:
-     - reload nginx
-
+   template:
+     src: consul_ui_nginx.conf
+     dest: /var/docker_volumes/nginx/nginx/conf.d/consul_ui.conf
+     mode: 644
+   notify: reload nginx
+ 
  # envconsul automatically sets environment vars from Consul.
  # Used in unit files
  # https://github.com/hashicorp/envconsul
  - name: install envconsul
-   get_url: >
-     url=https://github.com/hashicorp/envconsul/releases/download/v0.2.0/envconsul_linux_amd64
-     dest=/bin/envconsul
-     mode=0700
-
+   get_url:
+     url: https://github.com/hashicorp/envconsul/releases/download/v0.2.0/envconsul_linux_amd64
+     dest: /bin/envconsul
+     mode: 0700

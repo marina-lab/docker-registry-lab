@@ -15,10 +15,10 @@
   roles:
     - common
     - docker_host
-    - consul
-    - docksul
-    - riak_cs
     - nginx
+    - consul
+    - registrator
+    - riak_cs
     - docker_reg
 
   tasks:
@@ -26,18 +26,18 @@
       meta: flush_handlers
       when: is_first_run is defined
 
-    - name: reboot host
-      command: /bin/systemctl reboot --no-block
-      async: 0
-      poll: 0
-      ignore_errors: true
-      when: is_first_run is defined
+  ## - name: reboot host
+  #    command: /bin/systemctl reboot --no-block
+  #    async: 0
+  #    poll: 0
+  #    ignore_errors: true
+  #    when: is_first_run is defined
 
-    - name: wait for host to come back
-      local_action: >
-        wait_for
-        host={{ inventory_hostname }}
-        port=22
-        state=started
-      sudo: false
-      when: is_first_run is defined
+  #  - name: wait for host to come back
+  #    local_action: >
+  #      wait_for
+  #      host={{ inventory_hostname }}
+  #      port=22
+  #      state=started
+  #    sudo: false
+  #    when: is_first_run is defined

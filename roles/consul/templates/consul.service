@@ -4,7 +4,8 @@ After=docker.service
 Requires=docker.service
 
 [Service]
-Restart=on-failure
+#Restart=on-failure
+#RestartSec=5
 
 ExecStart=/bin/bash -c \
     "/bin/docker start -a consul \
@@ -17,26 +18,26 @@ ExecStart=/bin/bash -c \
     -e SERVICE_8301_NAME=consul-serf-lan \
     -e SERVICE_8302_NAME=consul-serf-wan \
     -e SERVICE_8300_NAME=consul-server-rpc \
-    -p {{ docker_bip }}:53:53/udp \
-    -p {{ advertise_ip }}:8500:8500 \
-    -p {{ advertise_ip }}:8400:8400 \
-    -p {{ advertise_ip }}:8301:8301 \
-    -p {{ advertise_ip }}:8301:8301/udp \
-    -p {{ advertise_ip }}:8302:8302 \
-    -p {{ advertise_ip }}:8302:8302/udp \
-    -p {{ advertise_ip }}:8300:8300 \
+    -p {{ private_ip }}:53:53/udp \
+    -p {{ private_ip }}:8500:8500 \
+    -p {{ private_ip }}:8400:8400 \
+    -p {{ private_ip }}:8301:8301 \
+    -p {{ private_ip }}:8301:8301/udp \
+    -p {{ private_ip }}:8300:8300 \
     -v /var/docker_volumes/consul/consul.d:/etc/consul.d \
     -v /var/docker_volumes/consul/data/:/data \
     {{ consul_image }} \
     -server \
-    -advertise {{ advertise_ip }} \
+    -advertise {{ private_ip }} \
     -bootstrap \
     -data-dir /data \
     -config-dir /etc/consul.d"
 
+# We only stop Consul because config is unlikely to change.
 ExecStop=/bin/bash -c \
     "/bin/docker stop consul \
     && /bin/docker rm consul"
+
 
 [Install]
 WantedBy=multi-user.target
