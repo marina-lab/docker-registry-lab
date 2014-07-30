@@ -20,10 +20,12 @@ expected_consul_servers: 1
 # number of Riak CS servers in cluster
 riak_cs_cluster_size: 1
 
-# ip address public services will be bound to
+# interface and ip address public services will be bound to
+public_if: eth0
 public_ip: "{{ ansible_eth0.ipv4.address }}"
 
-# ip address private services will be bound to
+# interface and ip address private services will be bound to
+private_if: eth1
 private_ip: "{{ ansible_eth1.ipv4.address }}"
 
 # images
