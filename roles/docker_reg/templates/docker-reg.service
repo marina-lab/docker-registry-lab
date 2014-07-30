@@ -2,6 +2,8 @@
 Description=Docker Registry Service
 After=riak-cs.service
 Requires=riak-cs.service
+Requires=registrator.service
+Requires=consul.service
 
 [Service]
 # Docker Registry will quit if it cannot connect to Riak CS, and

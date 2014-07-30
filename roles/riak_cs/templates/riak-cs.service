@@ -1,7 +1,8 @@
 [Unit]
 Description=Riak CS Service
-After=docksul.service
-Requires=docksul.service
+After=registrator.service
+Requires=consul.service
+Requires=registrator.service
 
 [Service]
 Restart=on-failure
