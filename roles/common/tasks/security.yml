@@ -61,3 +61,8 @@
    with_items:
      - iptables
      - ip6tables
+
+ - name: template iptables startup rules
+   template:
+     src: iptables
+     dest: /etc/sysconfig/iptables

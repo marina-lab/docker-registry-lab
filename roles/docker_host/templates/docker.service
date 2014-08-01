@@ -8,12 +8,8 @@ Requires=docker.socket
 Type=notify
 EnvironmentFile=-/etc/sysconfig/docker
 
-# Add iptables rules to accept packets from the private interface and docker0
-# TODO: Add rule for private interface on system startup instead?
-ExecStartPre=/sbin/iptables -I INPUT -i {{ private_if }} -j ACCEPT
-ExecStop=/sbin/iptables -D INPUT -i {{ private_if }} -j ACCEPT
-
-ExecStartPre=/sbin/iptables -I INPUT -i docker0 -j ACCEPT
+# Add iptables rules to accept packets from docker0
+ExecStartPost=/sbin/iptables -I INPUT -i docker0 -j ACCEPT
 ExecStop=/sbin/iptables -D INPUT -i docker0 -j ACCEPT
 
 ExecStart=/usr/bin/docker -d --dns {{ private_ip }} --dns 8.8.8.8 --dns-search service.consul --selinux-enabled -H fd://
