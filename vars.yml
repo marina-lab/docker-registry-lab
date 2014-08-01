@@ -31,6 +31,7 @@ private_ip: "{{ ansible_eth1.ipv4.address }}"
 # images
 consul_image: progrium/consul
 registrator_image: progrium/registrator
+logspout_image: progrium/logspout
 riak_cs_image: hectcastro/riak-cs
 nginx_image: mwcampbell/nginx
 docker_reg_image: sprin/docker-registry:0.7.3.2

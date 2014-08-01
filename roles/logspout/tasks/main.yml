@@ -1,0 +1,21 @@
+# Logspout Docker log router
+ - name: pull Logspout image
+   docker_pull:
+     repo: "{{ logspout_image }}"
+
+ - name: template logspout.service
+   template:
+     src: logspout.service
+     dest: /usr/lib/systemd/system/logspout.service
+   register: logspout_unit
+   notify: restart logspout
+
+ - name: systemctl daemon-reload
+   command: /bin/systemctl daemon-reload
+   when: logspout_unit.changed
+
+ - name: enable and start logspout.service
+   service:
+     name: logspout
+     enabled: yes
+     state: started

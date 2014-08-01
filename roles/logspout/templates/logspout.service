@@ -1,0 +1,23 @@
+[Unit]
+Description=Logspout Service
+After=docker.service
+Requires=docker.service
+
+[Service]
+Restart=on-failure
+
+ExecStart=/bin/bash -c \
+    "/bin/docker start -a logspout \
+    || /bin/docker run \
+    --name logspout \
+    -v /var/run/docker.sock:/tmp/docker.sock \
+    -e DOCKER_HOST=unix:///tmp/docker.sock \
+    -p {{ private_ip }}:8000:8000 \
+    {{ logspout_image }}
+
+ExecStop=/bin/bash -c \
+    "/bin/docker stop logspout \
+    && /bin/docker rm logspout"
+
+[Install]
+WantedBy=multi-user.target

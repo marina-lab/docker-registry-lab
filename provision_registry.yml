@@ -15,6 +15,7 @@
   roles:
     - common
     - docker_host
+    - logspout
     - nginx
     - consul
     - registrator

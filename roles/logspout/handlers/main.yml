@@ -1,0 +1,4 @@
+ - name: restart logspout
+   service:
+     name: logspout
+     state: restarted
