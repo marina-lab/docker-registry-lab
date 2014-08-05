@@ -4,8 +4,7 @@ After=consul.service
 Requires=consul.service
 
 [Service]
-#Restart=on-failure
-#RestartSec=5
+Restart=on-failure
 
 ExecStart=/bin/bash -c \
     "/bin/docker start -a registrator \

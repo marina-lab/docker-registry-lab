@@ -4,53 +4,15 @@
      path: /var/docker_volumes/registry
      state: directory
 
- - name: install boto (s3 client)
-   pip:
-     name: boto
-     version: 2.30.0
-
- - name: GET Riak CS key from Consul
-   uri:
-     url: http://consul-http.service.consul:8500/v1/kv/riak-cs/AWS_KEY
-     return_content: yes
-   register: riak_cs_key
-
- - set_fact:
-     riak_cs_key: "{{ riak_cs_key.json[0].Value | b64decode }}"
-
- - name: GET Riak CS secret in Consul
-   uri:
-     url: http://consul-http.service.consul:8500/v1/kv/riak-cs/AWS_SECRET
-     return_content: yes
-   register: riak_cs_secret
-
- - set_fact:
-     riak_cs_secret: "{{ riak_cs_secret.json[0].Value | b64decode }}"
-
- - name: create registry bucket
-   # Use the "fakes3" scheme to force Riak CS-compatible connection.
-   s3:
-     bucket: registry
-     mode: create
-     s3_url: "fakes3://riak-cs.service.consul:8080"
-     aws_access_key: "{{ riak_cs_key }}"
-     aws_secret_key: "{{ riak_cs_secret }}"
-
  - name: set docker-reg environment vars in Consul
    uri:
      url: "http://consul-http.service.consul:8500/v1/kv/docker-reg/{{ item.key }}"
      method: PUT
      body: "{{ item.value}}"
    with_dict:
-     SETTINGS_FLAVOR: s3
-     AWS_BUCKET: registry
-     AWS_SECURE: False
-     BOTO_HOST: riak-cs.service.consul
-     BOTO_PORT: 8080
-     BOTO_CALLING_FORMAT: boto.s3.connection.OrdinaryCallingFormat
+     SETTINGS_FLAVOR: local
      STORAGE_PATH: /registry
      GUNICORN_WORKERS: 1
-     BOTO_DEBUG: 2
 
  - name: pull docker registry image
    docker_pull:

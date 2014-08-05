@@ -1,8 +1,10 @@
 ---
 # Provision the droplet with roles:
 # - Docker Engine
+# - Logspout (Docker log aggregator)
+# - Nginx (reverse proxy)
 # - Consul (service discovery and routing)
-# - Riak CS (object store)
+# - Registrator (Consul/Docker bridge)
 # - Docker Registry
 
 # Provision with admin_user, unless is_first_run is defined, then with root.
@@ -19,7 +21,6 @@
     - nginx
     - consul
     - registrator
-    - riak_cs
     - docker_reg
 
   tasks:

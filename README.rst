@@ -5,10 +5,8 @@ docker-registry-lab
 Ansible playbooks to create and provision a Docker Registry, deployed
 using the docker-registry image.
 
-The storage backend Riak CS, an S3-compatible distributed object store, is
-also deployed as a container.
-
-To tie the Registry to Riak, a dockerized Consul is deployed.
+To tie services together via service discovery, a dockerized Consul is
+deployed.
 
 Nginx fronts the Registry, proxying requests using Consul as a DNS resolver.
 
@@ -17,14 +15,6 @@ on Digital Ocean (DO) with Centos 7.
 
 How to use
 ==========
-
-Use the Forks, Luke
--------------------
-
-Note that this also uses a fork of dotcloud/docker-registry, in order to
-enable connection to a Riak CS backend (#461). The fork is at
-sprin/docker-registry, and the image used by this playbook is in the public
-Docker registry under the same name.
 
 Environment variables and other assumptions
 -------------------------------------------
@@ -97,9 +87,6 @@ Production-Readyness
 
 (not has)
 
-This only configures a single node, whereas it is probably desirable to
-deploy Riak CS to at least three nodes for availability and fault tolerance.
-
 It's probably also not a good idea to expose this Registry as configured over
 the internet.
 
@@ -107,5 +94,4 @@ We are working on both of these.
 
 TODOs:
 ======
- - Deploy Consul and Riak to more than one node
  - Harden security config

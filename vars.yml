@@ -17,8 +17,6 @@ consul_ui_server_name: my.consul.ui.com
 # expected number of Consul servers in cluster
 expected_consul_servers: 1
 
-# number of Riak CS servers in cluster
-riak_cs_cluster_size: 1
 
 # interface and ip address public services will be bound to
 public_if: eth0
@@ -32,9 +30,8 @@ private_ip: "{{ ansible_eth1.ipv4.address }}"
 consul_image: progrium/consul
 registrator_image: progrium/registrator
 logspout_image: progrium/logspout
-riak_cs_image: hectcastro/riak-cs
 nginx_image: mwcampbell/nginx
-docker_reg_image: sprin/docker-registry:0.7.3.2
+docker_reg_image: registry:0.7.3
 
 # Optional registry droplet config
 do_ssh_pub_key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
